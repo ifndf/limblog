@@ -28,6 +28,7 @@ export default async function RootLayout({
   }
 
   const blogName = siteConfig.blog_name || "LimBlog";
+  const repoName = siteConfig.repo_name || "LimBlog";
   const repoUrl = siteConfig.repo_url || "https://github.com/yourname/limblog";
 
   return (
@@ -64,7 +65,7 @@ export default async function RootLayout({
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>Powered by <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{blogName}</a></p>
+            <p>Powered by <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{repoName}</a></p>
           </footer>
         </ThemeProvider>
       </body>

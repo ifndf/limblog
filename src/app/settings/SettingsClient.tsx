@@ -23,6 +23,7 @@ export default function SettingsClient() {
     // 站点配置状态
     const [siteConfig, setSiteConfig] = useState({
         blog_name: '',
+        repo_name: '',
         repo_url: '',
         home_content: '',
         contact_github: '',
@@ -328,14 +329,24 @@ export default function SettingsClient() {
                         <div className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800 animate-in fade-in slide-in-from-bottom-2">
                             <h2 className="text-xl font-bold tracking-tight mb-6">站点配置</h2>
                             <form onSubmit={handleSaveSiteConfig} className="flex flex-col gap-5">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2">
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mt-2">
                                     <div>
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">博客名称</label>
+                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">顶部博客名</label>
                                         <input
                                             type="text"
                                             className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
                                             value={siteConfig.blog_name}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, blog_name: e.target.value })}
+                                            placeholder="LimBlog"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">底部仓库名</label>
+                                        <input
+                                            type="text"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            value={siteConfig.repo_name}
+                                            onChange={(e) => setSiteConfig({ ...siteConfig, repo_name: e.target.value })}
                                             placeholder="LimBlog"
                                         />
                                     </div>

@@ -31,26 +31,26 @@ export default async function Home() {
 
 
 
-      <section className="space-y-4 pt-6">
-        <h2 className="text-xl font-bold">联系我</h2>
-        <div className="flex gap-4">
+      <section className="pt-6">
+        <div className="flex gap-4 items-center">
+          <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">联系我</span>
           {siteConfig.contact_github && (
-            <a href={siteConfig.contact_github} target="_blank" rel="noopener noreferrer" className="hover:underline text-neutral-600 dark:text-neutral-400">
+            <a href={siteConfig.contact_github} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
               GitHub
             </a>
           )}
           {siteConfig.contact_twitter && (
-            <a href={siteConfig.contact_twitter} target="_blank" rel="noopener noreferrer" className="hover:underline text-neutral-600 dark:text-neutral-400">
+            <a href={siteConfig.contact_twitter} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
               Twitter
             </a>
           )}
           {siteConfig.contact_mail && (
-            <a href={`mailto:${siteConfig.contact_mail}`} className="hover:underline text-neutral-600 dark:text-neutral-400">
+            <a href={`mailto:${siteConfig.contact_mail}`} className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
               Email
             </a>
           )}
           {!siteConfig.contact_github && !siteConfig.contact_twitter && !siteConfig.contact_mail && (
-            <p className="text-sm text-neutral-500">（作者暂时没有留下联系方式）</p>
+            <span className="text-sm text-neutral-400">（暂无）</span>
           )}
         </div>
       </section>

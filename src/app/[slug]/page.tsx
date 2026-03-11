@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import type { Metadata } from 'next'
 import { getSession } from '@/lib/auth'
 import PostActions from './PostActions'
@@ -50,7 +51,7 @@ export default async function PostPage({ params }: { params: Params }) {
             </header>
 
             <div className="prose prose-neutral min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl mx-auto pb-20">
-                <ReactMarkdown>{post.content}</ReactMarkdown>
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
             </div>
         </article>
     )
