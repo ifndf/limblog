@@ -42,18 +42,18 @@ export default async function RootLayout({
               </Link>
               <nav className="flex gap-4 items-center flex-wrap">
                 <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
-                  首页
+                  Home
                 </Link>
                 <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
-                  博客
+                  Blog
                 </Link>
                 {session && (
                   <>
-                    <Link href="/new" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                      写博客
+                    <Link href="/new" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                      New Post
                     </Link>
-                    <Link href="/settings" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                      设置
+                    <Link href="/settings" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                      Settings
                     </Link>
                     <LogoutButton />
                   </>

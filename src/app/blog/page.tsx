@@ -2,6 +2,7 @@ import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import Pagination from '../components/Pagination'
 import SearchInput from '../components/SearchInput'
+import { getSession } from '@/lib/auth'
 
 export const revalidate = 0
 
@@ -28,24 +29,28 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
         take: perPage,
     })
 
+    const session = await getSession()
+
     return (
         <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10">
             <section className="space-y-8 pt-6">
-                <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-end">
-                        <SearchInput defaultValue={query} />
+                {session && (
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-end">
+                            <SearchInput defaultValue={query} />
+                        </div>
+                        {query && (
+                            <p className="text-sm text-neutral-500">
+                                搜索 "{query}" , 共找到 {totalPosts} 篇文章
+                            </p>
+                        )}
                     </div>
-                    {query && (
-                        <p className="text-sm text-neutral-500">
-                            搜索 "{query}" , 共找到 {totalPosts} 篇文章
-                        </p>
-                    )}
-                </div>
+                )}
 
                 {posts.length === 0 ? (
                     <p className="text-neutral-500 italic">目前还没有博客。</p>
                 ) : (
-                    <div className="space-y-4 border-b border-neutral-200 dark:border-neutral-800 pb-10">
+                    <div className="space-y-4">
                         {posts.map((post) => {
                             const dateStr = new Date(post.createdAt).toLocaleDateString('en-GB', {
                                 day: '2-digit',

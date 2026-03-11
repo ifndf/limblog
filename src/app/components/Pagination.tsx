@@ -15,7 +15,7 @@ export default function Pagination({
     if (totalPages <= 1) return null
 
     return (
-        <div className="flex items-center justify-between pt-6 mt-10 text-sm font-mono border-t border-neutral-200 dark:border-neutral-800">
+        <div className="flex items-center justify-between pt-6 mt-10 text-sm font-mono">
             {currentPage > 1 ? (
                 <Link
                     href={`${pathname}?page=${currentPage - 1}`}
