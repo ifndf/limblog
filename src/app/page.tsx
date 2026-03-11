@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
+import Pagination from './components/Pagination'
 
 export const revalidate = 0 // Disable cache for demo since this is dynamic
 
@@ -54,31 +55,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ p
         )}
 
         {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-between pt-4">
-            {currentPage > 1 ? (
-              <Link
-                href={`/?page=${currentPage - 1}`}
-                className="text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400"
-              >
-                &larr; 上一页
-              </Link>
-            ) : <div />}
-
-            <span className="text-sm text-neutral-400 hidden sm:inline-block">
-              第 {currentPage} 页 / 共 {totalPages} 页
-            </span>
-
-            {currentPage < totalPages ? (
-              <Link
-                href={`/?page=${currentPage + 1}`}
-                className="text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400"
-              >
-                下一页 &rarr;
-              </Link>
-            ) : <div />}
-          </div>
-        )}
+        <Pagination currentPage={currentPage} totalPages={totalPages} />
       </section>
     </div>
   )
