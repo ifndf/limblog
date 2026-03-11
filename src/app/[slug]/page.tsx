@@ -32,9 +32,9 @@ export default async function PostPage({ params }: { params: Params }) {
     }
 
     return (
-        <article className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-none">
+        <article className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-2xl mx-auto px-5 lg:px-0">
             <header className="space-y-4 text-center mt-12 mb-16">
-                <h1 className="text-4xl font-black tracking-tight leading-tight max-w-2xl mx-auto">
+                <h1 className="text-4xl font-black tracking-tight leading-tight mx-auto">
                     {post.title}
                 </h1>
                 <div className="text-neutral-500 uppercase tracking-widest text-sm space-x-2">

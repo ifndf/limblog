@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Home() {
   return (
-    <div className="space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <section className="mt-12 space-y-6">
         <h1 className="text-3xl font-extrabold tracking-tight">你好，我是 Lim.</h1>
 

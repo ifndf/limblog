@@ -56,7 +56,7 @@ export default async function RootLayout({
               </nav>
             </div>
           </header>
-          <main className="flex-grow max-w-2xl w-full mx-auto px-5 lg:px-0">
+          <main className="flex-grow w-full">
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
