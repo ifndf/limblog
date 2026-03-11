@@ -7,6 +7,7 @@ export async function middleware(request: NextRequest) {
 
     // Protected routes list
     const isProtectedPath = pathname.startsWith('/new') ||
+        pathname.startsWith('/edit') ||
         pathname.startsWith('/settings') ||
         pathname.startsWith('/api/upload') ||
         pathname.startsWith('/api/auth/settings') ||
@@ -48,5 +49,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/new/:path*', '/settings/:path*', '/api/posts/:path*', '/api/upload/:path*', '/api/auth/logout', '/api/auth/settings']
+    matcher: ['/new/:path*', '/edit/:path*', '/settings/:path*', '/api/posts/:path*', '/api/upload/:path*', '/api/auth/logout', '/api/auth/settings']
 }

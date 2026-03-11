@@ -2,15 +2,14 @@ import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
 import type { Metadata } from 'next'
+import { getSession } from '@/lib/auth'
+import PostActions from './PostActions'
 
-// Next.js 15 requires params to be a Promise
 type Params = Promise<{ slug: string }>
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
     const { slug } = await params
-    const post = await prisma.post.findUnique({
-        where: { slug }
-    })
+    const post = await prisma.post.findUnique({ where: { slug } })
 
     if (!post) {
         return { title: 'Post Not Found' }
@@ -23,13 +22,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function PostPage({ params }: { params: Params }) {
     const { slug } = await params
-    const post = await prisma.post.findUnique({
-        where: { slug }
-    })
+    const post = await prisma.post.findUnique({ where: { slug } })
 
     if (!post) {
         notFound()
     }
+
+    const session = await getSession()
 
     return (
         <article className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-2xl mx-auto px-5 lg:px-0">
@@ -46,6 +45,8 @@ export default async function PostPage({ params }: { params: Params }) {
                         })}
                     </time>
                 </div>
+
+                {session && <PostActions slug={post.slug} />}
             </header>
 
             <div className="prose prose-neutral min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl mx-auto pb-20">
