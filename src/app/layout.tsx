@@ -36,11 +36,11 @@ export default async function RootLayout({
       <body className={`${inter.className} min-h-screen flex flex-col antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <header className="py-8 px-5 lg:px-0">
-            <div className="max-w-2xl mx-auto flex items-center justify-between">
+            <div className="max-w-2xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <Link href="/" className="text-xl font-bold tracking-tight">
                 {blogName}
               </Link>
-              <nav className="flex gap-4 items-center">
+              <nav className="flex gap-4 items-center flex-wrap">
                 <ThemeToggle />
                 <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
                   关于
@@ -60,7 +60,7 @@ export default async function RootLayout({
                   </>
                 ) : (
                   <Link href="/login" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                    后台登录
+                    登入
                   </Link>
                 )}
               </nav>
@@ -70,7 +70,7 @@ export default async function RootLayout({
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>© {new Date().getFullYear()} {blogName}. 基于 <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">LimBlog</a> 架构，由 Next.js 驱动。</p>
+            <p>© {new Date().getFullYear()} 基于 <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">LimBlog</a> 架构，由 Next.js 驱动。</p>
           </footer>
         </ThemeProvider>
       </body>
