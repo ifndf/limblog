@@ -33,7 +33,10 @@ export default async function RootLayout({
               <nav className="flex gap-4 items-center">
                 <ThemeToggle />
                 <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                  主页
+                  关于
+                </Link>
+                <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
+                  博客
                 </Link>
                 {session ? (
                   <>

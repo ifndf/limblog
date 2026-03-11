@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 
 export default function Pagination({
     currentPage,
@@ -11,9 +11,10 @@ export default function Pagination({
     totalPages: number
 }) {
     const router = useRouter()
+    const pathname = usePathname()
 
     const handlePageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        router.push(`/?page=${e.target.value}`)
+        router.push(`${pathname}?page=${e.target.value}`)
     }
 
     if (totalPages <= 1) return null
@@ -22,14 +23,14 @@ export default function Pagination({
         <div className="flex items-center justify-between pt-6 mt-10">
             <div className="flex items-center gap-3">
                 <Link
-                    href="/?page=1"
+                    href={`${pathname}?page=1`}
                     className={`text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400 ${currentPage <= 1 ? 'pointer-events-none opacity-50' : ''
                         }`}
                 >
                     首页
                 </Link>
                 <Link
-                    href={`/?page=${currentPage - 1}`}
+                    href={`${pathname}?page=${currentPage - 1}`}
                     className={`text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400 ${currentPage <= 1 ? 'pointer-events-none opacity-50' : ''
                         }`}
                 >
@@ -55,14 +56,14 @@ export default function Pagination({
 
             <div className="flex items-center gap-3">
                 <Link
-                    href={`/?page=${currentPage + 1}`}
+                    href={`${pathname}?page=${currentPage + 1}`}
                     className={`text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400 ${currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''
                         }`}
                 >
                     下一页 &rarr;
                 </Link>
                 <Link
-                    href={`/?page=${totalPages}`}
+                    href={`${pathname}?page=${totalPages}`}
                     className={`text-sm font-medium hover:underline text-neutral-600 dark:text-neutral-400 ${currentPage >= totalPages ? 'pointer-events-none opacity-50' : ''
                         }`}
                 >
