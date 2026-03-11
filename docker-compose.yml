@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  limblog:
+    build: .
+    container_name: limblog
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      # 指定 Prisma 数据库路径为容器内部的挂载路径
+      - DATABASE_URL=file:/app/data/limblog.db
+    volumes:
+      # 将宿主机当前目录下的 data 文件夹映射到容器内部的 /app/data
+      # 这样所有的文章数据、网站配置都不会因为容器重启或更新而丢失
+      - ./data:/app/data
