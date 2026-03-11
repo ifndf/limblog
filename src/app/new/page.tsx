@@ -46,6 +46,39 @@ export default function NewPost() {
         }
     }
 
+    const uploadImage = async (file: File) => {
+        const formData = new FormData()
+        formData.append('file', file)
+        const uploadRes = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+        })
+        if (uploadRes.ok) {
+            const data = await uploadRes.json()
+            return data.url
+        }
+        return null
+    }
+
+    const handlePaste = async (e: React.ClipboardEvent) => {
+        const items = e.clipboardData.items
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                e.preventDefault()
+                const file = items[i].getAsFile()
+                if (file) {
+                    const url = await uploadImage(file)
+                    if (url) {
+                        const imgMd = `![${file.name}](${url})\n`
+                        setContent((prev) => prev + imgMd)
+                    } else {
+                        alert('图片上传失败')
+                    }
+                }
+            }
+        }
+    }
+
     return (
         <div className="space-y-6">
             <h1 className="text-2xl font-bold tracking-tight mb-8">撰写新博客</h1>
@@ -87,12 +120,13 @@ export default function NewPost() {
                 </div>
 
                 <div className="flex flex-col gap-2 flex-grow">
-                    <label htmlFor="content" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">正文内容 (Markdown / HTML)</label>
+                    <label htmlFor="content" className="text-sm font-medium text-neutral-700 dark:text-neutral-300">正文内容 (支持复制粘贴/拖拽图片直接上传)</label>
                     <textarea
                         id="content"
                         required
+                        onPaste={handlePaste}
                         className="border font-mono border-neutral-300 p-3 rounded-md h-[400px] focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 resize-y leading-relaxed"
-                        placeholder="使用 Markdown 或纯文本书写..."
+                        placeholder="使用 Markdown 书写... 直接 ctrl+v 粘贴图片"
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                     />

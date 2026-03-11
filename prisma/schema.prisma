@@ -12,6 +12,17 @@ model Post {
   slug      String   @unique
   title     String
   content   String
+  published Boolean  @default(true) // 为了草稿功能
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  authorId  String?
+  author    User?    @relation(fields: [authorId], references: [id])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String // bcrypt hased
+  posts     Post[]
+  createdAt DateTime @default(now())
 }
