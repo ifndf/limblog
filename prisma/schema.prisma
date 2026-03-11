@@ -26,3 +26,8 @@ model User {
   posts     Post[]
   createdAt DateTime @default(now())
 }
+
+model SiteConfig {
+  key   String @id
+  value String
+}

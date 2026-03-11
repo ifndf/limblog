@@ -13,6 +13,8 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/api/auth/settings') ||
         pathname.startsWith('/api/posts/export') ||
         pathname.startsWith('/api/posts/import') ||
+        pathname.startsWith('/api/posts/delete-all') ||
+        (pathname.startsWith('/api/site-config') && request.method !== 'GET') ||
         (pathname.startsWith('/api/posts') && request.method !== 'GET')
 
     if (isProtectedPath) {
@@ -49,5 +51,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-    matcher: ['/new/:path*', '/edit/:path*', '/settings/:path*', '/api/posts/:path*', '/api/upload/:path*', '/api/auth/logout', '/api/auth/settings']
+    matcher: ['/new/:path*', '/edit/:path*', '/settings/:path*', '/api/posts/:path*', '/api/upload/:path*', '/api/auth/logout', '/api/auth/settings', '/api/site-config/:path*']
 }
