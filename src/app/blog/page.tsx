@@ -1,18 +1,28 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import Pagination from '../components/Pagination'
+import SearchInput from '../components/SearchInput'
 
 export const revalidate = 0
 
-export default async function Blog({ searchParams }: { searchParams: Promise<{ page?: string }> }) {
+export default async function Blog({ searchParams }: { searchParams: Promise<{ page?: string; q?: string }> }) {
     const resolvedParams = await searchParams;
     const currentPage = Math.max(1, parseInt(resolvedParams.page || '1', 10));
+    const query = resolvedParams.q || '';
     const perPage = 10;
 
-    const totalPosts = await prisma.post.count();
+    const whereClause = query ? {
+        OR: [
+            { title: { contains: query } },
+            { content: { contains: query } }
+        ]
+    } : {};
+
+    const totalPosts = await prisma.post.count({ where: whereClause });
     const totalPages = Math.ceil(totalPosts / perPage);
 
     const posts = await prisma.post.findMany({
+        where: whereClause,
         orderBy: { createdAt: 'desc' },
         skip: (currentPage - 1) * perPage,
         take: perPage,
@@ -21,7 +31,18 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
     return (
         <div className="space-y-10">
             <section className="space-y-8 pt-6">
-                <h1 className="text-3xl font-bold tracking-tight mb-8">博客</h1>
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center justify-between">
+                        <h1 className="text-3xl font-bold tracking-tight">博客</h1>
+                        <SearchInput defaultValue={query} />
+                    </div>
+                    {query && (
+                        <p className="text-sm text-neutral-500">
+                            搜索 "{query}" , 共找到 {totalPosts} 篇文章
+                        </p>
+                    )}
+                </div>
+
                 {posts.length === 0 ? (
                     <p className="text-neutral-500 italic">目前还没有博客。</p>
                 ) : (
