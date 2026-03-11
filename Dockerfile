@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
@@ -7,15 +7,20 @@ COPY package.json package-lock.json* ./
 RUN npm ci
 
 COPY . .
+
+ENV DATABASE_URL="file:/tmp/dummy.db"
+
 # Generate Prisma client
 RUN npx prisma generate
 # Build the Next.js application
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 
 WORKDIR /app
 ENV NODE_ENV production
+
+RUN npm install -g prisma@6
 
 # Ensure the database directory exists
 RUN mkdir -p /app/data
@@ -30,4 +35,4 @@ COPY --from=builder /app/prisma ./prisma
 EXPOSE 3000
 
 # Run the application
-CMD ["node", "server.js"]
+CMD ["sh", "-c", "prisma db push --skip-generate && node server.js"]

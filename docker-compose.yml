@@ -6,7 +6,7 @@ services:
     container_name: limblog
     restart: always
     ports:
-      - "3000:3000"
+      - "3456:3000"
     environment:
       # 指定 Prisma 数据库路径为容器内部的挂载路径
       - DATABASE_URL=file:/app/data/limblog.db
