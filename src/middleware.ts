@@ -9,7 +9,9 @@ export async function middleware(request: NextRequest) {
     const isProtectedPath = pathname.startsWith('/new') ||
         pathname.startsWith('/settings') ||
         pathname.startsWith('/api/upload') ||
-        (pathname.startsWith('/api/auth/settings')) ||
+        pathname.startsWith('/api/auth/settings') ||
+        pathname.startsWith('/api/posts/export') ||
+        pathname.startsWith('/api/posts/import') ||
         (pathname.startsWith('/api/posts') && request.method !== 'GET')
 
     if (isProtectedPath) {
