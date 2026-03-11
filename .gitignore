@@ -49,3 +49,6 @@ dev.db
 
 # User uploads
 /public/uploads
+
+# Claude
+.claude/settings.local.json
