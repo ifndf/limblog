@@ -4,16 +4,22 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import { Eye, Edit3, Save, Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, Link as LinkIcon, Image as ImageIcon, Quote, Code, Braces, List, ListOrdered, ListChecks, Minus, Table } from 'lucide-react'
+import { slugify } from 'transliteration'
 
 export default function NewPost() {
     const [title, setTitle] = useState('')
     const [slug, setSlug] = useState('')
+    const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
     const [content, setContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState('')
     const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write') // Mobile primarily
 
     const router = useRouter()
+
+    const generateSlug = (text: string) => {
+        return slugify(text, { lowercase: true, separator: '-' })
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -44,9 +50,10 @@ export default function NewPost() {
 
     // Auto-generate slug from title
     const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value)
-        if (!slug || slug === title.toLowerCase().replace(/[\s\W-]+/g, '-')) {
-            setSlug(e.target.value.toLowerCase().replace(/[\s\W-]+/g, '-'))
+        const newTitle = e.target.value
+        setTitle(newTitle)
+        if (!slugManuallyEdited) {
+            setSlug(generateSlug(newTitle))
         }
     }
 
@@ -146,7 +153,7 @@ export default function NewPost() {
                             className="border border-neutral-300 p-2 text-sm rounded-r-md flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 h-full"
                             placeholder="my-first-post"
                             value={slug}
-                            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[\s]+/g, '-'))}
+                            onChange={(e) => { setSlugManuallyEdited(true); setSlug(e.target.value.toLowerCase().replace(/[\s]+/g, '-')) }}
                         />
                     </div>
                 </div>
