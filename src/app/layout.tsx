@@ -5,7 +5,6 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import LogoutButton from "./components/LogoutButton";
 import { ThemeProvider } from "./components/ThemeProvider";
-import ThemeToggle from "./components/ThemeToggle";
 import prisma from "@/lib/prisma";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -34,21 +33,20 @@ export default async function RootLayout({
   return (
     <html lang="zh" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
           <header className="py-8 px-5 lg:px-0">
             <div className="max-w-2xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <Link href="/" className="text-xl font-bold tracking-tight">
                 {blogName}
               </Link>
               <nav className="flex gap-4 items-center flex-wrap">
-                <ThemeToggle />
-                <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                  关于
+                <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                  首页
                 </Link>
-                <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
+                <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
                   博客
                 </Link>
-                {session ? (
+                {session && (
                   <>
                     <Link href="/new" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
                       写博客
@@ -58,10 +56,6 @@ export default async function RootLayout({
                     </Link>
                     <LogoutButton />
                   </>
-                ) : (
-                  <Link href="/login" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400">
-                    登入
-                  </Link>
                 )}
               </nav>
             </div>
@@ -70,7 +64,7 @@ export default async function RootLayout({
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>© {new Date().getFullYear()} 基于 <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">LimBlog</a> 架构，由 Next.js 驱动。</p>
+            <p>Powered by <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{blogName}</a></p>
           </footer>
         </ThemeProvider>
       </body>

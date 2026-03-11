@@ -45,25 +45,27 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
                 {posts.length === 0 ? (
                     <p className="text-neutral-500 italic">目前还没有博客。</p>
                 ) : (
-                    <div className="space-y-10 border-b border-neutral-200 dark:border-neutral-800 pb-10">
-                        {posts.map((post) => (
-                            <article key={post.id} className="group">
-                                <Link href={`/${post.slug}`} className="block">
-                                    <h3 className="text-lg font-medium group-hover:underline underline-offset-4 decoration-neutral-400 leading-tight">
-                                        {post.title}
-                                    </h3>
-                                    <div className="mt-2 text-neutral-500 text-sm flex gap-4">
-                                        <time dateTime={post.createdAt.toISOString()}>
-                                            {new Date(post.createdAt).toLocaleDateString('zh-CN', {
-                                                year: 'numeric',
-                                                month: 'long',
-                                                day: 'numeric'
-                                            })}
-                                        </time>
-                                    </div>
-                                </Link>
-                            </article>
-                        ))}
+                    <div className="space-y-4 border-b border-neutral-200 dark:border-neutral-800 pb-10">
+                        {posts.map((post) => {
+                            const dateStr = new Date(post.createdAt).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                            })
+
+                            return (
+                                <article key={post.id} className="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
+                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-32 shrink-0 font-mono text-base">
+                                        {dateStr}
+                                    </time>
+                                    <Link href={`/${post.slug}`} className="block flex-1">
+                                        <h3 className="text-lg text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug font-normal">
+                                            {post.title}
+                                        </h3>
+                                    </Link>
+                                </article>
+                            )
+                        })}
                     </div>
                 )}
 
