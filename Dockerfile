@@ -31,8 +31,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 
+RUN npm install bcryptjs
+
 # Expose port
 EXPOSE 3000
 
 # Run the application
-CMD ["sh", "-c", "prisma db push --skip-generate && node server.js"]
+CMD ["sh", "-c", "prisma db push --skip-generate && node prisma/seed.js && node server.js"]
