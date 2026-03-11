@@ -32,8 +32,7 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
         <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10">
             <section className="space-y-8 pt-6">
                 <div className="flex flex-col gap-2">
-                    <div className="flex items-center justify-between">
-                        <h1 className="text-3xl font-bold tracking-tight">博客</h1>
+                    <div className="flex items-center justify-end">
                         <SearchInput defaultValue={query} />
                     </div>
                     {query && (

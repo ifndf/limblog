@@ -24,21 +24,12 @@ export default async function Home() {
   return (
     <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <section className="mt-12 space-y-6">
-        <h1 className="text-3xl font-extrabold tracking-tight">你好，我是 Lim.</h1>
-
-        <div className="prose prose-neutral dark:prose-invert">
+        <div className="prose prose-neutral dark:prose-invert mt-8">
           <ReactMarkdown>{homeContent}</ReactMarkdown>
         </div>
       </section>
 
-      <section className="space-y-4 pt-6">
-        <h2 className="text-xl font-bold">我的重点小册</h2>
-        <ul className="list-disc pl-5 space-y-2 text-neutral-600 dark:text-neutral-400">
-          <li><Link href="/mock-post-1" className="hover:underline">构建极简博客背后的设计哲学</Link></li>
-          <li>如何基于 Next.js + Server Actions 把全栈做轻</li>
-          <li>关于摄影与我的一些瞬间</li>
-        </ul>
-      </section>
+
 
       <section className="space-y-4 pt-6">
         <h2 className="text-xl font-bold">联系我</h2>

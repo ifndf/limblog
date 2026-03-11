@@ -6,6 +6,7 @@ import { getSession } from "@/lib/auth";
 import LogoutButton from "./components/LogoutButton";
 import { ThemeProvider } from "./components/ThemeProvider";
 import ThemeToggle from "./components/ThemeToggle";
+import prisma from "@/lib/prisma";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,15 @@ export default async function RootLayout({
 }>) {
   const session = await getSession();
 
+  const configs = await prisma.siteConfig.findMany()
+  const siteConfig: Record<string, string> = {}
+  for (const c of configs) {
+    siteConfig[c.key] = c.value
+  }
+
+  const blogName = siteConfig.blog_name || "LimBlog";
+  const repoUrl = siteConfig.repo_url || "https://github.com/yourname/limblog";
+
   return (
     <html lang="zh" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased selection:bg-neutral-200 dark:selection:bg-neutral-800`}>
@@ -28,7 +38,7 @@ export default async function RootLayout({
           <header className="py-8 px-5 lg:px-0">
             <div className="max-w-2xl mx-auto flex items-center justify-between">
               <Link href="/" className="text-xl font-bold tracking-tight">
-                LimBlog
+                {blogName}
               </Link>
               <nav className="flex gap-4 items-center">
                 <ThemeToggle />
@@ -60,7 +70,7 @@ export default async function RootLayout({
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>© {new Date().getFullYear()} LimBlog. 由 Next.js 驱动。</p>
+            <p>© {new Date().getFullYear()} <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{blogName}</a>. 由 Next.js 驱动。</p>
           </footer>
         </ThemeProvider>
       </body>
