@@ -70,7 +70,7 @@ export default async function RootLayout({
             {children}
           </main>
           <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>© {new Date().getFullYear()} <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{blogName}</a>. 由 Next.js 驱动。</p>
+            <p>© {new Date().getFullYear()} {blogName}. 基于 <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">LimBlog</a> 架构，由 Next.js 驱动。</p>
           </footer>
         </ThemeProvider>
       </body>
