@@ -27,11 +27,9 @@ export default function Login() {
                 throw new Error(data.error || '登录失败')
             }
 
-            router.push('/new')
-            router.refresh()
+            window.location.href = '/new'
         } catch (err: any) {
             setError(err.message)
-        } finally {
             setLoading(false)
         }
     }
