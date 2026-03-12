@@ -80,8 +80,7 @@ export default function NewPost() {
                 if (file) {
                     const url = await uploadImage(file)
                     if (url) {
-                        const imgMd = `![${file.name}](${url})\n`
-                        setContent((prev) => prev + imgMd)
+                        insertTextAtCursor(`![${file.name}](${url})\n`)
                     } else {
                         alert('图片上传失败')
                     }
@@ -95,13 +94,33 @@ export default function NewPost() {
         if (file) {
             const url = await uploadImage(file)
             if (url) {
-                const imgMd = `![${file.name}](${url})\n`
-                setContent((prev) => prev + imgMd)
+                insertTextAtCursor(`![${file.name}](${url})\n`)
             } else {
                 alert('图片上传失败')
             }
         }
         e.target.value = ''
+    }
+
+    const insertTextAtCursor = (textToInsert: string) => {
+        const textarea = document.getElementById('content') as HTMLTextAreaElement;
+        if (!textarea) {
+            setContent((prev) => prev + textToInsert);
+            return;
+        }
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const before = content.substring(0, start);
+        const after = content.substring(end);
+
+        setContent(before + textToInsert + after);
+
+        setTimeout(() => {
+            textarea.focus();
+            const newCursorPos = start + textToInsert.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+        }, 0);
     }
 
     const handleFormat = (prefix: string, suffix: string = '') => {
@@ -110,14 +129,13 @@ export default function NewPost() {
 
         const start = textarea.selectionStart;
         const end = textarea.selectionEnd;
-        const text = content;
+        const selected = content.substring(start, end);
+        
+        const insertion = prefix + selected + suffix;
+        const before = content.substring(0, start);
+        const after = content.substring(end);
 
-        const before = text.substring(0, start);
-        const selected = text.substring(start, end);
-        const after = text.substring(end, text.length);
-
-        const newText = before + prefix + selected + suffix + after;
-        setContent(newText);
+        setContent(before + insertion + after);
 
         setTimeout(() => {
             textarea.focus();

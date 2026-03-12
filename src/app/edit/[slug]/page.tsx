@@ -97,7 +97,7 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                 if (file) {
                     const url = await uploadImage(file)
                     if (url) {
-                        setContent((prev) => prev + `![${file.name}](${url})\n`)
+                        insertTextAtCursor(`![${file.name}](${url})\n`)
                     } else {
                         alert('图片上传失败')
                     }
@@ -111,13 +111,33 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
         if (file) {
             const url = await uploadImage(file)
             if (url) {
-                const imgMd = `![${file.name}](${url})\n`
-                setContent((prev) => prev + imgMd)
+                insertTextAtCursor(`![${file.name}](${url})\n`)
             } else {
                 alert('图片上传失败')
             }
         }
         e.target.value = ''
+    }
+
+    const insertTextAtCursor = (textToInsert: string) => {
+        const textarea = document.getElementById('content') as HTMLTextAreaElement;
+        if (!textarea) {
+            setContent((prev) => prev + textToInsert);
+            return;
+        }
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const before = content.substring(0, start);
+        const after = content.substring(end);
+
+        setContent(before + textToInsert + after);
+
+        setTimeout(() => {
+            textarea.focus();
+            const newCursorPos = start + textToInsert.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+        }, 0);
     }
 
     const handleFormat = (prefix: string, suffix: string = '') => {
