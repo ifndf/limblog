@@ -52,19 +52,19 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
                 ) : (
                     <div className="space-y-4">
                         {posts.map((post) => {
-                            const dateStr = new Date(post.createdAt).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: 'short',
-                                year: 'numeric'
-                            })
+                            const d = new Date(post.createdAt)
+                            const day = d.toLocaleDateString('en-GB', { day: '2-digit' })
+                            const month = d.toLocaleDateString('en-GB', { month: 'short' })
+                            const year = d.getFullYear()
+                            const dateStr = `${day} ${month}, ${year}`
 
                             return (
-                                <article key={post.id} className="group flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
-                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-32 shrink-0 font-mono text-base">
+                                <article key={post.id} className="group flex flex-row items-baseline gap-4 sm:gap-6">
+                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-[110px] sm:w-32 shrink-0 font-mono text-sm sm:text-base tabular-nums tracking-tight">
                                         {dateStr}
                                     </time>
-                                    <Link href={`/${post.slug}`} className="block flex-1">
-                                        <h3 className="text-lg text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug font-normal">
+                                    <Link href={`/${post.slug}`} className="block flex-1 min-w-0">
+                                        <h3 className="text-base sm:text-lg text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug font-normal truncate sm:whitespace-normal">
                                             {post.title}
                                         </h3>
                                     </Link>
