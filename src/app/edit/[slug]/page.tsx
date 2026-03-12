@@ -232,6 +232,7 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                                 <ImageIcon size={16} />
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
                             </label>
+                            <button type="button" onClick={() => handleFormat('![alt](', ')')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入外链图片"><LinkIcon size={16} className="rotate-45" /></button>
                             <button type="button" onClick={() => handleFormat('> ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="引用"><Quote size={16} /></button>
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
                             <button type="button" onClick={() => handleFormat('`', '`')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="行内代码"><Code size={16} /></button>

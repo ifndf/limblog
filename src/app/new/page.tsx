@@ -217,6 +217,7 @@ export default function NewPost() {
                                 <ImageIcon size={16} />
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
                             </label>
+                            <button type="button" onClick={() => handleFormat('![alt](', ')')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入外链图片"><LinkIcon size={16} className="rotate-45" /></button>
                             <button type="button" onClick={() => handleFormat('> ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="引用块"><Quote size={16} /></button>
 
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
