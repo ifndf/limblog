@@ -21,6 +21,7 @@ WORKDIR /app
 ENV NODE_ENV production
 
 RUN npm install -g prisma@6
+RUN npm install bcryptjs
 
 # Ensure the database directory exists
 RUN mkdir -p /app/data
@@ -30,8 +31,6 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
-
-RUN npm install bcryptjs
 
 # Expose port
 EXPOSE 3000
