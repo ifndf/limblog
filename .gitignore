@@ -45,10 +45,11 @@ next-env.d.ts
 # SQLite database
 *.db
 *.db-journal
-dev.db
+/data/
 
-# User uploads
+# User uploads (legacy and current)
 /public/uploads
+/data/uploads/
 
 # Claude
 .claude/settings.local.json

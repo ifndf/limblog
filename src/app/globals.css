@@ -25,3 +25,21 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* 确保所有输入框和文本域都可以被正常选中和操作 */
+input, textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  cursor: text;
+}
+
+/* 提高全局选中文本的可见度 */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3); /* 浅蓝色半透明 */
+  color: inherit;
+}
+
+/* 确保工具提示等装饰性元素不影响点击穿透 */
+.pointer-events-none-all {
+  pointer-events: none !important;
+}

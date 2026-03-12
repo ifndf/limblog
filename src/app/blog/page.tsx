@@ -60,7 +60,7 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
 
                             return (
                                 <article key={post.id} className="group flex flex-row items-baseline gap-4 sm:gap-6">
-                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-[110px] sm:w-32 shrink-0 font-mono text-sm sm:text-base tabular-nums tracking-tight">
+                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-[105px] sm:w-[124px] shrink-0 font-mono text-sm sm:text-base tabular-nums">
                                         {dateStr}
                                     </time>
                                     <Link href={`/${post.slug}`} className="block flex-1 min-w-0">

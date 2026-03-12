@@ -90,6 +90,20 @@ export default function NewPost() {
         }
     }
 
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const url = await uploadImage(file)
+            if (url) {
+                const imgMd = `![${file.name}](${url})\n`
+                setContent((prev) => prev + imgMd)
+            } else {
+                alert('图片上传失败')
+            }
+        }
+        e.target.value = ''
+    }
+
     const handleFormat = (prefix: string, suffix: string = '') => {
         const textarea = document.getElementById('content') as HTMLTextAreaElement;
         if (!textarea) return;
@@ -138,7 +152,7 @@ export default function NewPost() {
                     <input
                         required
                         type="text"
-                        className="border border-neutral-300 p-2 text-lg rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700"
+                        className="w-full border border-neutral-300 p-2 text-lg rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
                         placeholder="输入博客标题..."
                         value={title}
                         onChange={handleTitleChange}
@@ -150,7 +164,7 @@ export default function NewPost() {
                         <input
                             required
                             type="text"
-                            className="border border-neutral-300 p-2 text-sm rounded-r-md flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 h-full"
+                            className="border border-neutral-300 p-2 text-sm rounded-r-md flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 h-full block cursor-text"
                             placeholder="my-first-post"
                             value={slug}
                             onChange={(e) => { setSlugManuallyEdited(true); setSlug(e.target.value.toLowerCase().replace(/[\s]+/g, '-')) }}
@@ -198,8 +212,11 @@ export default function NewPost() {
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
 
                             {/* Insert */}
-                            <button type="button" onClick={() => handleFormat('[', '](url)')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入链接"><LinkIcon size={16} /></button>
-                            <button type="button" onClick={() => handleFormat('![alt](', ')')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入图片"><ImageIcon size={16} /></button>
+                             <button type="button" onClick={() => handleFormat('[', '](url)')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入链接"><LinkIcon size={16} /></button>
+                            <label className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors cursor-pointer" title="上传本地图片">
+                                <ImageIcon size={16} />
+                                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                            </label>
                             <button type="button" onClick={() => handleFormat('> ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="引用块"><Quote size={16} /></button>
 
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
@@ -221,7 +238,7 @@ export default function NewPost() {
                             <button type="button" onClick={() => handleFormat('\n---\n', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="分隔线"><Minus size={16} /></button>
                             <button type="button" onClick={() => handleFormat('\n| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| ', ' |  |  |\n')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="插入表格"><Table size={16} /></button>
                         </div>
-                        <div className="absolute top-[52px] right-4 opacity-0 group-focus-within:opacity-100 transition-opacity flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-xs text-neutral-500 dark:text-neutral-400 font-medium z-10">
+                        <div className="absolute top-[52px] right-4 opacity-0 group-focus-within:opacity-100 transition-opacity flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-xs text-neutral-500 dark:text-neutral-400 font-medium z-10 pointer-events-none">
                             MD 支持剪贴板传图
                         </div>
                         <textarea

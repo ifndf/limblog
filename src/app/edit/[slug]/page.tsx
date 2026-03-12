@@ -14,6 +14,7 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
     const [fetching, setFetching] = useState(true)
     const [error, setError] = useState('')
     const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write')
+    const [slugManuallyEdited, setSlugManuallyEdited] = useState(false)
 
     const router = useRouter()
 
@@ -63,6 +64,19 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
         }
     }
 
+    const generateSlug = (text: string) => {
+        const { slugify } = require('transliteration')
+        return slugify(text, { lowercase: true, separator: '-' })
+    }
+
+    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newTitle = e.target.value
+        setTitle(newTitle)
+        if (!slugManuallyEdited) {
+            setSlug(generateSlug(newTitle))
+        }
+    }
+
     const uploadImage = async (file: File) => {
         const formData = new FormData()
         formData.append('file', file)
@@ -90,6 +104,20 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                 }
             }
         }
+    }
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (file) {
+            const url = await uploadImage(file)
+            if (url) {
+                const imgMd = `![${file.name}](${url})\n`
+                setContent((prev) => prev + imgMd)
+            } else {
+                alert('图片上传失败')
+            }
+        }
+        e.target.value = ''
     }
 
     const handleFormat = (prefix: string, suffix: string = '') => {
@@ -148,10 +176,10 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                     <input
                         required
                         type="text"
-                        className="w-full border border-neutral-300 p-2 text-lg rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700"
+                        className="w-full border border-neutral-300 p-2 text-lg rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
                         placeholder="文章标题..."
                         value={title}
-                        onChange={(e) => setTitle(e.target.value)}
+                        onChange={handleTitleChange}
                     />
                 </div>
                 <div className="flex-1">
@@ -160,9 +188,9 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                         <input
                             required
                             type="text"
-                            className="border border-neutral-300 p-2 text-sm rounded-r-md flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 h-full"
+                            className="border border-neutral-300 p-2 text-sm rounded-r-md flex-1 focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 h-full block cursor-text"
                             value={slug}
-                            onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[\s]+/g, '-'))}
+                            onChange={(e) => { setSlugManuallyEdited(true); setSlug(e.target.value.toLowerCase().replace(/[\s]+/g, '-')) }}
                         />
                     </div>
                 </div>
@@ -199,8 +227,11 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                             <button type="button" onClick={() => handleFormat('## ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="二级标题"><Heading2 size={16} /></button>
                             <button type="button" onClick={() => handleFormat('### ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="三级标题"><Heading3 size={16} /></button>
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
-                            <button type="button" onClick={() => handleFormat('[', '](url)')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="链接"><LinkIcon size={16} /></button>
-                            <button type="button" onClick={() => handleFormat('![alt](', ')')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="图片"><ImageIcon size={16} /></button>
+                             <button type="button" onClick={() => handleFormat('[', '](url)')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="链接"><LinkIcon size={16} /></button>
+                            <label className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors cursor-pointer" title="上传本地图片">
+                                <ImageIcon size={16} />
+                                <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
+                            </label>
                             <button type="button" onClick={() => handleFormat('> ', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="引用"><Quote size={16} /></button>
                             <div className="w-px h-4 bg-neutral-300 dark:bg-neutral-700 mx-1 shrink-0"></div>
                             <button type="button" onClick={() => handleFormat('`', '`')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="行内代码"><Code size={16} /></button>

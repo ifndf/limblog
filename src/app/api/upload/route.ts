@@ -25,25 +25,34 @@ export async function POST(request: Request) {
         const buffer = Buffer.from(await file.arrayBuffer())
 
         // Create safe filename
-        const ext = path.extname(file.name)
+        const ext = path.extname(file.name).toLowerCase()
+        const isImage = ['.jpg', '.jpeg', '.png', '.webp', '.gif', '.tiff'].includes(ext)
         const baseName = path.basename(file.name, ext).replace(/[^a-zA-Z0-9]/g, '-')
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
-        const filename = `${baseName}-${uniqueSuffix}${ext}`
-
-        // Upload directory: data/uploads (for persistence in Docker)
+        
         const uploadDir = path.join(process.cwd(), 'data', 'uploads')
-
-        // Optional: make sure directory exists using fs or mcp_filesystem_create_directory in a real setup.
-        // We'll rely on Prisma/Next or create it explicitly here if it's node env
         try {
             await require('fs').promises.mkdir(uploadDir, { recursive: true })
-        } catch (e) {
-            // Ignore if exists
+        } catch (e) {}
+
+        let finalFilename = `${baseName}-${uniqueSuffix}${ext}`
+        let finalBuffer = buffer
+
+        if (isImage && ext !== '.gif') { // Skip gif compression for now to avoid complexity
+            try {
+                const sharp = require('sharp')
+                finalBuffer = await sharp(buffer)
+                    .resize({ width: 1200, withoutEnlargement: true })
+                    .webp({ quality: 80 })
+                    .toBuffer()
+                finalFilename = `${baseName}-${uniqueSuffix}.webp`
+            } catch (err) {
+                console.error('Sharp compression failed, falling back to original:', err)
+            }
         }
 
-        await writeFile(path.join(uploadDir, filename), buffer)
-
-        const fileUrl = `/uploads/${filename}`
+        await writeFile(path.join(uploadDir, finalFilename), finalBuffer)
+        const fileUrl = `/uploads/${finalFilename}`
 
         return NextResponse.json({ url: fileUrl })
     } catch (error) {

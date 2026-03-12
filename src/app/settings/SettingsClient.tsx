@@ -226,7 +226,7 @@ export default function SettingsClient() {
                                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">新用户名 <span className="text-neutral-500 font-normal">(留空代表不修改)</span></label>
                                     <input
                                         type="text"
-                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700"
+                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
                                         value={username}
                                         onChange={(e) => setUsername(e.target.value)}
                                     />
@@ -235,7 +235,7 @@ export default function SettingsClient() {
                                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">新密码 <span className="text-neutral-500 font-normal">(留空代表不修改)</span></label>
                                     <input
                                         type="password"
-                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700"
+                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
                                     />
@@ -334,7 +334,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">顶部博客名</label>
                                         <input
                                             type="text"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.blog_name}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, blog_name: e.target.value })}
                                             placeholder="LimBlog"
@@ -344,7 +344,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">底部仓库名</label>
                                         <input
                                             type="text"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.repo_name}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, repo_name: e.target.value })}
                                             placeholder="LimBlog"
@@ -354,7 +354,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">底部仓库链接</label>
                                         <input
                                             type="url"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.repo_url}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, repo_url: e.target.value })}
                                             placeholder="https://github.com/..."
@@ -364,7 +364,7 @@ export default function SettingsClient() {
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">主页内容展示 (Markdown 格式)</label>
                                     <textarea
-                                        className="w-full border border-neutral-300 p-3 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 font-mono text-sm leading-relaxed min-h-[150px]"
+                                        className="w-full border border-neutral-300 p-3 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 font-mono text-sm leading-relaxed min-h-[150px] block cursor-text"
                                         value={siteConfig.home_content}
                                         onChange={(e) => setSiteConfig({ ...siteConfig, home_content: e.target.value })}
                                         placeholder="在这里编写你的主页介绍..."
@@ -376,7 +376,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">GitHub 链接</label>
                                         <input
                                             type="url"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.contact_github}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, contact_github: e.target.value })}
                                             placeholder="https://github.com/..."
@@ -386,7 +386,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Twitter 链接</label>
                                         <input
                                             type="url"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.contact_twitter}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, contact_twitter: e.target.value })}
                                             placeholder="https://twitter.com/..."
@@ -396,7 +396,7 @@ export default function SettingsClient() {
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">邮箱地址</label>
                                         <input
                                             type="email"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none dark:bg-neutral-800 dark:border-neutral-700 text-sm"
+                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
                                             value={siteConfig.contact_mail}
                                             onChange={(e) => setSiteConfig({ ...siteConfig, contact_mail: e.target.value })}
                                             placeholder="hello@example.com"

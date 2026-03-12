@@ -20,11 +20,12 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV production
 
-RUN npm install -g prisma@6
-RUN npm install bcryptjs
+# Install production dependencies
+RUN npm install -g prisma@6 && \
+    npm install bcryptjs sharp
 
-# Ensure the database directory exists
-RUN mkdir -p /app/data
+# Ensure the database and uploads directory exists
+RUN mkdir -p /app/data/uploads
 
 # Copy necessary files from builder
 COPY --from=builder /app/public ./public
