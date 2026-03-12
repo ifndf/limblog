@@ -30,8 +30,8 @@ export async function POST(request: Request) {
         const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1E9)}`
         const filename = `${baseName}-${uniqueSuffix}${ext}`
 
-        // Upload directory: public/uploads
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+        // Upload directory: data/uploads (for persistence in Docker)
+        const uploadDir = path.join(process.cwd(), 'data', 'uploads')
 
         // Optional: make sure directory exists using fs or mcp_filesystem_create_directory in a real setup.
         // We'll rely on Prisma/Next or create it explicitly here if it's node env
