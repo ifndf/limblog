@@ -23,7 +23,10 @@ export async function GET() {
             ].join('\n')
 
             const fileContent = frontmatter + post.content
-            zip.file(`${post.slug}.md`, fileContent)
+            
+            // 使用标题作为文件名，并过滤掉系统非法字符
+            const safeTitle = post.title.replace(/[\\/:\*\?"<>\|]/g, '_').trim() || post.slug
+            zip.file(`${safeTitle}.md`, fileContent)
         }
 
         const zipBlob = await zip.generateAsync({ type: 'arraybuffer' })
