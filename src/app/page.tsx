@@ -10,13 +10,31 @@ export default async function Home() {
   }
 
   const defaultHomeContent = `
-欢迎来到我的极简博客！这是一个受到 Bear Blog 启发的轻量级动态博客架构。
+Hello, 这是 LimBlog 主页！
+
 在这里，你可以随时快速写作，记录技术心得或生活点滴。
 
 我们主旨在于“回归文字本身”：摒弃了花哨的动画与复杂的分类流，给你提供一个最纯粹、最安静的阅读与创作空间。
 
-点击上方的 [博客](/blog) 可以查看我的全部文章列表。
-所有的代码都是由我自己从零搭建（包括极简的管理后台）。你可以随时在这个页面编辑关于你自己的独特介绍。
+点击上方的 [博客](/blog) 可以查看全部文章列表。
+
+你可以随时登入 [后台](/login) 页面编辑关于你自己的独特介绍。
+
+开始你的文字之旅吧！
+
+---
+
+Hello, this is the **LimBlog** homepage!
+
+Here, you can quickly write and record technical insights or life moments at any time.
+
+Our mission is to **"Return to the essence of writing"**: discarding fancy animations and complex categorization to provide you with the purest and quietest space for reading and creating.
+
+Click on [Blog](/blog) above to view the full list of articles.
+
+You can log in to the [Admin](/login) page at any time to edit your own unique introduction.
+
+Start your writing journey now!
   `
 
   const homeContent = siteConfig.home_content?.trim() || defaultHomeContent
