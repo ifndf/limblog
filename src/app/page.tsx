@@ -45,7 +45,18 @@ Start your writing journey now!
     <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <section className="mt-4 space-y-6">
         <div className="prose prose-neutral dark:prose-invert">
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{homeContent}</ReactMarkdown>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            components={{
+              table: ({ node, ...props }) => (
+                <div className="w-full overflow-x-auto my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                  <table {...props} className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800" />
+                </div>
+              ),
+            }}
+          >
+            {homeContent}
+          </ReactMarkdown>
         </div>
       </section>
 

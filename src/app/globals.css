@@ -44,7 +44,18 @@ input, textarea {
   pointer-events: none !important;
 }
 
-/* 优化文章内 iframe (如视频) 的显示 */
+/* 确保文章内的表格在移动端可以横向滚动，而不是被挤压 */
+.prose table th,
+.prose table td {
+  white-space: nowrap;
+  min-width: 120px;
+  padding: 0.75rem 1rem !important;
+}
+
+.prose table td {
+  vertical-align: top;
+}
+
 .prose iframe {
   width: 100% !important;
   aspect-ratio: 16 / 9;

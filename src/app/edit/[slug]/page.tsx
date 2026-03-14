@@ -291,6 +291,11 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                                         remarkPlugins={[remarkGfm, remarkBreaks]}
                                         rehypePlugins={[rehypeRaw]}
                                         components={{
+                                            table: ({ node, ...props }) => (
+                                                <div className="w-full overflow-x-auto my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                                                    <table {...props} className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800" />
+                                                </div>
+                                            ),
                                             iframe: ({ node, ...props }) => {
                                                 let src = props.src || ''
                                                 if (src) {

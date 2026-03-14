@@ -25,7 +25,18 @@ export default async function FriendsPage() {
     return (
         <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
             <div className="prose prose-neutral dark:prose-invert min-w-full">
-                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{friendsContent}</ReactMarkdown>
+                <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
+                    components={{
+                        table: ({ node, ...props }) => (
+                            <div className="w-full overflow-x-auto my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                                <table {...props} className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800" />
+                            </div>
+                        ),
+                    }}
+                >
+                    {friendsContent}
+                </ReactMarkdown>
             </div>
         </div>
     )
