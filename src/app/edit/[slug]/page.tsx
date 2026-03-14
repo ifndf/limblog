@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
+import rehypeRaw from 'rehype-raw'
 import { Eye, Edit3, Save, Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, Link as LinkIcon, Image as ImageIcon, Quote, Code, Braces, List, ListOrdered, ListChecks, Minus, Table } from 'lucide-react'
 
 export default function EditPost({ params }: { params: Promise<{ slug: string }> }) {
@@ -281,7 +282,38 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                         <div className="p-8 h-full">
                             {content ? (
                                 <div className="prose prose-neutral md:prose-sm lg:prose-base xl:prose-lg min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl break-words">
-                                    <ReactMarkdown>{content}</ReactMarkdown>
+                                    <ReactMarkdown
+                                        rehypePlugins={[rehypeRaw]}
+                                        components={{
+                                            iframe: ({ node, ...props }) => {
+                                                let src = props.src || ''
+                                                if (src) {
+                                                    try {
+                                                        const url = new URL(src.startsWith('//') ? `https:${src}` : src)
+                                                        if (url.searchParams.has('autoplay')) {
+                                                            url.searchParams.set('autoplay', '0')
+                                                        } else {
+                                                            url.searchParams.append('autoplay', '0')
+                                                        }
+                                                        if (src.includes('bilibili.com')) {
+                                                            url.searchParams.set('high_quality', '1')
+                                                        }
+                                                        src = url.toString()
+                                                    } catch (e) {
+                                                        const connector = src.includes('?') ? '&' : '?'
+                                                        if (!src.includes('autoplay=')) {
+                                                            src = `${src}${connector}autoplay=0`
+                                                        } else {
+                                                            src = src.replace(/autoplay=[^&]*/, 'autoplay=0')
+                                                        }
+                                                    }
+                                                }
+                                                return <iframe {...props} src={src} className="w-full aspect-video rounded-lg my-4" allowFullScreen />
+                                            }
+                                        }}
+                                    >
+                                        {content}
+                                    </ReactMarkdown>
                                 </div>
                             ) : (
                                 <div className="h-full flex items-center justify-center text-neutral-400 dark:text-neutral-600 text-sm flex-col gap-4">

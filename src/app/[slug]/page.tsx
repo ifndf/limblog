@@ -51,7 +51,49 @@ export default async function PostPage({ params }: { params: Params }) {
             </header>
 
             <div className="prose prose-neutral min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl mx-auto pb-20">
-                <ReactMarkdown rehypePlugins={[rehypeRaw]}>{post.content}</ReactMarkdown>
+                <ReactMarkdown
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                        iframe: ({ node, ...props }) => {
+                            let src = props.src || ''
+                            if (src) {
+                                try {
+                                    const url = new URL(src.startsWith('//') ? `https:${src}` : src)
+                                    // 针对 Bilibili, YouTube 等常见的 autoplay 参数进行处理
+                                    if (url.searchParams.has('autoplay')) {
+                                        url.searchParams.set('autoplay', '0')
+                                    } else {
+                                        url.searchParams.append('autoplay', '0')
+                                    }
+                                    // 如果是 bilibili，经常还有 high_quality 参数
+                                    if (src.includes('bilibili.com')) {
+                                        url.searchParams.set('high_quality', '1')
+                                    }
+                                    src = url.toString()
+                                } catch (e) {
+                                    // 如果不是标准 URL，则尝试简单的字符串拼接
+                                    const connector = src.includes('?') ? '&' : '?'
+                                    if (!src.includes('autoplay=')) {
+                                        src = `${src}${connector}autoplay=0`
+                                    } else {
+                                        src = src.replace(/autoplay=[^&]*/, 'autoplay=0')
+                                    }
+                                }
+                            }
+                            return (
+                                <iframe
+                                    {...props}
+                                    src={src}
+                                    className="w-full aspect-video rounded-xl my-8 border border-neutral-200 dark:border-neutral-800 shadow-lg"
+                                    allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                />
+                            )
+                        }
+                    }}
+                >
+                    {post.content}
+                </ReactMarkdown>
             </div>
         </article>
     )
