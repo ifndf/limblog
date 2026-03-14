@@ -41,8 +41,8 @@ Start your writing journey now!
 
   return (
     <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <section className="mt-12 space-y-6">
-        <div className="prose prose-neutral dark:prose-invert mt-8">
+      <section className="mt-4 space-y-6">
+        <div className="prose prose-neutral dark:prose-invert">
           <ReactMarkdown>{homeContent}</ReactMarkdown>
         </div>
       </section>

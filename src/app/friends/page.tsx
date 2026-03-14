@@ -21,7 +21,7 @@ export default async function FriendsPage() {
     const friendsContent = siteConfig.friends_content?.trim() || defaultFriendsContent
 
     return (
-        <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-12 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
+        <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
             <div className="prose prose-neutral dark:prose-invert min-w-full">
                 <ReactMarkdown>{friendsContent}</ReactMarkdown>
             </div>

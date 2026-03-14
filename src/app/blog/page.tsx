@@ -33,7 +33,7 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
 
     return (
         <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10">
-            <section className="space-y-8 pt-6">
+            <section className="space-y-8 mt-4">
                 {session && (
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center justify-end">
