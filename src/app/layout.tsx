@@ -9,11 +9,6 @@ import prisma from "@/lib/prisma";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "LimBlog",
-  description: "A lightweight blog platform",
-};
-
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -33,6 +28,10 @@ export default async function RootLayout({
 
   return (
     <html lang="zh" suppressHydrationWarning>
+      <head>
+        <title>{blogName}</title>
+        <meta name="description" content="A lightweight blog platform" />
+      </head>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
           <header className="py-10 px-5 lg:px-0">
