@@ -28,8 +28,8 @@ export default async function RootLayout({
   }
 
   const blogName = siteConfig.blog_name || "LimBlog";
-  const repoName = siteConfig.repo_name || "LimBlog";
-  const repoUrl = siteConfig.repo_url || "https://github.com/yourname/limblog";
+  const repoName = "LimBlog";
+  const repoUrl = "https://github.com/ifndf/limblog";
 
   return (
     <html lang="zh" suppressHydrationWarning>
