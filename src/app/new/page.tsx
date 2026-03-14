@@ -215,7 +215,7 @@ export default function NewPost() {
                 {/* PC Split View / Mobile Tabs View */}
                 <div className="flex flex-1 overflow-hidden">
                     {/* Write Pane */}
-                    <div className={`${activeTab === 'preview' ? 'hidden' : 'flex'} md:flex flex-1 flex-col border-r border-neutral-200 dark:border-neutral-800 relative group`}>
+                    <div className={`${activeTab === 'preview' ? 'hidden' : 'flex'} md:flex flex-1 flex-col min-w-0 border-r border-neutral-200 dark:border-neutral-800 relative group`}>
                         {/* Toolbar */}
                         <div className="flex items-center gap-0.5 border-b border-neutral-200 dark:border-neutral-800 px-2 py-1.5 overflow-x-auto bg-neutral-50 dark:bg-neutral-900/50 shrink-0">
                             {/* Text Formatting */}
@@ -267,7 +267,7 @@ export default function NewPost() {
                             id="content"
                             required
                             onPaste={handlePaste}
-                            className="flex-1 p-6 font-mono text-sm leading-relaxed resize-none bg-transparent focus:outline-none placeholder:text-neutral-400"
+                            className="flex-1 w-full p-6 font-mono text-sm leading-relaxed resize-none bg-transparent focus:outline-none placeholder:text-neutral-400 break-words"
                             placeholder="开始使用 Markdown 泼墨挥笔...&#10;直接 Ctrl+V 即可上传并粘贴图片。"
                             value={content}
                             onChange={(e) => setContent(e.target.value)}

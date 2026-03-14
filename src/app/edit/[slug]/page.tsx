@@ -239,7 +239,7 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
 
                 <div className="flex flex-1 overflow-hidden">
                     {/* Write Pane */}
-                    <div className={`${activeTab === 'preview' ? 'hidden' : 'flex'} md:flex flex-1 flex-col border-r border-neutral-200 dark:border-neutral-800`}>
+                    <div className={`${activeTab === 'preview' ? 'hidden' : 'flex'} md:flex flex-1 flex-col min-w-0 border-r border-neutral-200 dark:border-neutral-800 relative group`}>
                         {/* Toolbar */}
                         <div className="flex items-center gap-0.5 border-b border-neutral-200 dark:border-neutral-800 px-2 py-1.5 overflow-x-auto bg-neutral-50 dark:bg-neutral-900/50 shrink-0">
                             <button type="button" onClick={() => handleFormat('**', '**')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="加粗"><Bold size={16} /></button>
@@ -268,11 +268,14 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                             <button type="button" onClick={() => handleFormat('\n---\n', '')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="分隔线"><Minus size={16} /></button>
                             <button type="button" onClick={() => handleFormat('\n| 列1 | 列2 | 列3 |\n| --- | --- | --- |\n| ', ' |  |  |\n')} className="p-1.5 text-neutral-500 hover:text-neutral-900 hover:bg-neutral-200 dark:hover:text-neutral-100 dark:hover:bg-neutral-800 rounded transition-colors" title="表格"><Table size={16} /></button>
                         </div>
+                        <div className="absolute top-[52px] right-4 opacity-0 group-focus-within:opacity-100 transition-opacity flex items-center gap-1 bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded text-xs text-neutral-500 dark:text-neutral-400 font-medium z-10 pointer-events-none">
+                            MD 支持剪贴板传图
+                        </div>
                         <textarea
                             id="content"
                             required
                             onPaste={handlePaste}
-                            className="flex-1 p-6 font-mono text-sm leading-relaxed resize-none bg-transparent focus:outline-none placeholder:text-neutral-400"
+                            className="flex-1 w-full p-6 font-mono text-sm leading-relaxed resize-none bg-transparent focus:outline-none placeholder:text-neutral-400 break-words"
                             placeholder="Markdown 正文..."
                             value={content}
                             onChange={(e) => setContent(e.target.value)}
