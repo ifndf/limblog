@@ -2,10 +2,18 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Download, Upload, FileArchive, Trash2, User, Database, Settings as SettingsIcon } from 'lucide-react'
+import { Download, Upload, FileArchive, Trash2, User, Database, Settings as SettingsIcon, Sun, Moon, Monitor } from 'lucide-react'
+import { useTheme } from 'next-themes'
 
 export default function SettingsClient() {
     const [activeTab, setActiveTab] = useState<'account' | 'data' | 'site'>('account')
+    const { theme, setTheme, resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+
+    // 避免水合错误
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -325,10 +333,42 @@ export default function SettingsClient() {
                     )}
 
                     {activeTab === 'site' && (
-                        <div className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800 animate-in fade-in slide-in-from-bottom-2">
-                            <h2 className="text-xl font-bold tracking-tight mb-6">站点配置</h2>
-                            <form onSubmit={handleSaveSiteConfig} className="flex flex-col gap-5">
-                                <div className="grid grid-cols-1 gap-5 mt-2">
+                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+                            <section className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800">
+                                <h2 className="text-xl font-bold tracking-tight mb-6">站点配置</h2>
+                                <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-4 flex items-center gap-2">
+                                    界面主题
+                                </h3>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setTheme('light')}
+                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'light' ? 'border-neutral-900 bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
+                                    >
+                                        <Sun size={16} />
+                                        <span className="text-xs font-medium">浅色</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setTheme('dark')}
+                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'dark' ? 'border-neutral-900 bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
+                                    >
+                                        <Moon size={16} />
+                                        <span className="text-xs font-medium">深色</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setTheme('system')}
+                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'system' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
+                                    >
+                                        <Monitor size={16} />
+                                        <span className="text-xs font-medium">系统</span>
+                                    </button>
+                                </div>
+                            </section>
+
+                            <form onSubmit={handleSaveSiteConfig} className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800 space-y-6">
+                                <div className="grid grid-cols-1 gap-5">
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">顶部博客名</label>
                                         <input
@@ -340,8 +380,9 @@ export default function SettingsClient() {
                                         />
                                     </div>
                                 </div>
+
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">主页内容展示 (Markdown 格式)</label>
+                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">主页内容 (Markdown 格式)</label>
                                     <textarea
                                         className="w-full border border-neutral-300 p-3 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 font-mono text-sm leading-relaxed min-h-[150px] block cursor-text"
                                         value={siteConfig.home_content}
@@ -350,6 +391,7 @@ export default function SettingsClient() {
                                     />
                                     <p className="text-xs text-neutral-500 mt-2">这段文字将会显示在博客的首页。</p>
                                 </div>
+
                                 <div>
                                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">友链内容 (Markdown 格式)</label>
                                     <textarea
@@ -360,6 +402,7 @@ export default function SettingsClient() {
                                     />
                                     <p className="text-xs text-neutral-500 mt-2">这段文字将会显示在友链页面 (/friends)。</p>
                                 </div>
+
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2">
                                     <div>
                                         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">GitHub 链接</label>
@@ -381,16 +424,16 @@ export default function SettingsClient() {
                                             placeholder="https://twitter.com/..."
                                         />
                                     </div>
-                                    <div className="sm:col-span-2">
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">邮箱地址</label>
-                                        <input
-                                            type="email"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
-                                            value={siteConfig.contact_mail}
-                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_mail: e.target.value })}
-                                            placeholder="hello@example.com"
-                                        />
-                                    </div>
+                                </div>
+                                <div className="sm:col-span-2">
+                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">邮箱地址</label>
+                                    <input
+                                        type="email"
+                                        className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
+                                        value={siteConfig.contact_mail}
+                                        onChange={(e) => setSiteConfig({ ...siteConfig, contact_mail: e.target.value })}
+                                        placeholder="hello@example.com"
+                                    />
                                 </div>
                                 <button
                                     type="submit"

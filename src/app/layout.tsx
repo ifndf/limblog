@@ -33,7 +33,7 @@ export default async function RootLayout({
         <meta name="description" content="A lightweight blog platform" />
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <header className="py-10 px-5 lg:px-0">
             <div className="max-w-2xl mx-auto">
               <Link href="/" className="text-3xl font-bold tracking-tight block mb-4">
