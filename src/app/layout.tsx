@@ -47,6 +47,9 @@ export default async function RootLayout({
                 <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
                   Blog
                 </Link>
+                <Link href="/friends" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                  Friends
+                </Link>
                 {session && (
                   <>
                     <Link href="/new" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">

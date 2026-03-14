@@ -1,0 +1,30 @@
+import prisma from '@/lib/prisma'
+import ReactMarkdown from 'react-markdown'
+
+export default async function FriendsPage() {
+    const configs = await prisma.siteConfig.findMany()
+    const siteConfig: Record<string, string> = {}
+    for (const c of configs) {
+        siteConfig[c.key] = c.value
+    }
+
+    const defaultFriendsContent = `
+# Friends
+
+这里是我的朋友们。排名不分先后！
+
+---
+
+目前还没有添加友链。你可以在后台的“站点配置”中进行添加。
+    `
+
+    const friendsContent = siteConfig.friends_content?.trim() || defaultFriendsContent
+
+    return (
+        <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-12 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
+            <div className="prose prose-neutral dark:prose-invert min-w-full">
+                <ReactMarkdown>{friendsContent}</ReactMarkdown>
+            </div>
+        </div>
+    )
+}

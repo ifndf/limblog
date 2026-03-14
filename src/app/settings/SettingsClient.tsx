@@ -24,6 +24,7 @@ export default function SettingsClient() {
     const [siteConfig, setSiteConfig] = useState({
         blog_name: '',
         home_content: '',
+        friends_content: '',
         contact_github: '',
         contact_twitter: '',
         contact_mail: '',
@@ -348,6 +349,16 @@ export default function SettingsClient() {
                                         placeholder="在这里编写你的主页介绍..."
                                     />
                                     <p className="text-xs text-neutral-500 mt-2">这段文字将会显示在博客的首页。</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">友链内容 (Markdown 格式)</label>
+                                    <textarea
+                                        className="w-full border border-neutral-300 p-3 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 font-mono text-sm leading-relaxed min-h-[150px] block cursor-text"
+                                        value={siteConfig.friends_content}
+                                        onChange={(e) => setSiteConfig({ ...siteConfig, friends_content: e.target.value })}
+                                        placeholder="在这里编写你的朋友们..."
+                                    />
+                                    <p className="text-xs text-neutral-500 mt-2">这段文字将会显示在友链页面 (/friends)。</p>
                                 </div>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2">
                                     <div>
