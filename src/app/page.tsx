@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 
 export default async function Home() {
   const configs = await prisma.siteConfig.findMany()
@@ -43,7 +45,7 @@ Start your writing journey now!
     <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <section className="mt-4 space-y-6">
         <div className="prose prose-neutral dark:prose-invert">
-          <ReactMarkdown>{homeContent}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{homeContent}</ReactMarkdown>
         </div>
       </section>
 

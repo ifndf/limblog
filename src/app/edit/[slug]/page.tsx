@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 import { Eye, Edit3, Save, Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, Link as LinkIcon, Image as ImageIcon, Quote, Code, Braces, List, ListOrdered, ListChecks, Minus, Table } from 'lucide-react'
 
 export default function EditPost({ params }: { params: Promise<{ slug: string }> }) {
@@ -283,6 +285,7 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
                             {content ? (
                                 <div className="prose prose-neutral md:prose-sm lg:prose-base xl:prose-lg min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl break-words">
                                     <ReactMarkdown
+                                        remarkPlugins={[remarkGfm, remarkBreaks]}
                                         rehypePlugins={[rehypeRaw]}
                                         components={{
                                             iframe: ({ node, ...props }) => {

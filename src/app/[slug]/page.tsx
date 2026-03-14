@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation'
 import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
 import rehypeRaw from 'rehype-raw'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 import type { Metadata } from 'next'
 import { getSession } from '@/lib/auth'
 import PostActions from './PostActions'
@@ -52,6 +54,7 @@ export default async function PostPage({ params }: { params: Params }) {
 
             <div className="prose prose-neutral min-w-full dark:prose-invert prose-headings:font-bold prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-img:rounded-xl mx-auto pb-20">
                 <ReactMarkdown
+                    remarkPlugins={[remarkGfm, remarkBreaks]}
                     rehypePlugins={[rehypeRaw]}
                     components={{
                         iframe: ({ node, ...props }) => {

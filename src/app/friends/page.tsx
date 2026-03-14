@@ -1,5 +1,7 @@
 import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import remarkBreaks from 'remark-breaks'
 
 export default async function FriendsPage() {
     const configs = await prisma.siteConfig.findMany()
@@ -23,7 +25,7 @@ export default async function FriendsPage() {
     return (
         <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20">
             <div className="prose prose-neutral dark:prose-invert min-w-full">
-                <ReactMarkdown>{friendsContent}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{friendsContent}</ReactMarkdown>
             </div>
         </div>
     )
