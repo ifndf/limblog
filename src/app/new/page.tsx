@@ -145,7 +145,7 @@ export default function NewPost() {
     }
 
     return (
-        <div className="flex flex-col h-[calc(100vh-140px)] max-w-[1400px] w-full mx-auto px-5 gap-6">
+        <div className="flex flex-col min-h-[calc(100dvh-140px)] md:h-[calc(100vh-140px)] h-auto max-w-[1400px] w-full mx-auto px-5 gap-6 pb-10 md:pb-0">
             <div className="flex items-center justify-between shrink-0">
                 <h1 className="text-2xl font-bold tracking-tight">撰写新博客</h1>
                 <div className="flex gap-2">
@@ -193,7 +193,7 @@ export default function NewPost() {
             </div>
 
             {/* Editor & Preview Area */}
-            <div className="flex-1 flex flex-col border border-neutral-300 rounded-xl overflow-hidden dark:border-neutral-700 bg-white dark:bg-neutral-900">
+            <div className="flex-1 flex flex-col border border-neutral-300 rounded-xl overflow-hidden dark:border-neutral-700 bg-white dark:bg-neutral-900 min-h-[500px] md:min-h-0">
                 {/* Mobile Tabs */}
                 <div className="flex border-b border-neutral-200 dark:border-neutral-800 md:hidden bg-neutral-50 dark:bg-neutral-950">
                     <button
