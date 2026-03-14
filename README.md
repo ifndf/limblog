@@ -2,22 +2,44 @@
 
 **Less is More.**
 
-LimBlog 是一个模仿 [Bear Blog](https://bearblog.dev/) 风格的极简博客系统。因为喜欢 Bear Blog 那种纯粹、克制的设计哲学，所以做了这个可以自托管的开源版本。
+LimBlog 是一个模仿 [Bear Blog](https://bearblog.dev/) 风格的极简博客系统。它专为热爱写作的人设计，剔除了所有不必要的干扰，提供一个纯粹、安静的创作空间。
 
-## 理念
-
-- 只关注文字，不关注样式
-- 没有广告、弹窗、跟踪代码，够用就好，不做多余的事
-- 随时随地记录，随心所欲编辑
 ---
 
-## 部署
+## 📸 界面预览
 
-基于 **Next.js 15** + **Prisma (SQLite)** + **Tailwind CSS** 构建。
+| 🏠 首页 | 📝 撰写文章 |
+| :---: | :---: |
+| ![首页](./screenshots/Home.png) | ![撰写](./screenshots/NewPost.png) |
 
-### Docker Compose（推荐）
+| 📚 博客列表 | ⚙️ 站点配置 |
+| :---: | :---: |
+| ![列表](./screenshots/blog.png) | ![配置](./screenshots/setting1.png) |
 
-适用于 VPS、威联通 / 群晖 NAS 等环境。
+---
+
+## ✨ 核心特性
+
+- **极简至上**：无广告、无跟踪脚本，极其轻量，毫秒级加载。
+- **现代化技术栈**：基于 Next.js 15 (App Router) + Prisma + Tailwind CSS。
+- **强大的编辑器**：
+  - 支持全功能 Markdown 语法。
+  - **本地图片上传**：支持直接粘贴 (Ctrl+V) 或拖拽图片上传。
+  - **智能压缩**：上传图片自动转换为 WebP 格式并压缩大小，兼顾画质与加载速度。
+  - **外链视频优化**：完美支持 Bilibili、YouTube 嵌入，自动适配 16:9 比例并默认禁用自动播放。
+- **灵活的 Slug 管理**：标题与 URL (Slug) 自动同步，支持手动锁定修改。
+- **数据自主**：
+  - 使用 SQLite 数据库，单文件存储，备份极其简单。
+  - **导入/导出**：支持一键导出所有文章为带元数据的 Markdown 文件。
+- **完全自托管**：支持 Docker 一键部署，数据持久化存储。
+
+---
+
+## 🚀 快速部署
+
+### Docker Compose (推荐)
+
+最简单、快捷且保持环境整洁的部署方案。
 
 ```bash
 git clone https://github.com/ifndf/limblog.git
@@ -25,50 +47,42 @@ cd limblog
 sudo docker compose up -d --build
 ```
 
-启动后访问 `http://你的IP:3456` 即可。
+访问 `http://localhost:3456` 即可开始使用。
 
-`docker-compose.yml` 默认配置：
+**持久化说明：**
+- 数据存放在宿主机的 `./data` 目录。
+- 数据库路径：`/app/data/limblog.db`
+- 上传图片路径：`/app/data/uploads/`
 
-```yaml
-ports:
-  - "3456:3000"       # 宿主机端口:容器端口，左侧可自行修改。注意：宿主机端口不能被占用
-environment:
-  - DATABASE_URL=file:/app/data/limblog.db
-volumes:
-  - ./data:/app/data  # 数据持久化，容器删除后数据不丢失
-```
+### 本地开发
 
-**NAS 用户（Container Station 等图形界面）要点：**
-1. 端口映射：宿主机任意端口 → 容器 `3000`
-2. 存储挂载：NAS 本地文件夹 → 容器 `/app/data`
-3. 环境变量：`DATABASE_URL` = `file:/app/data/limblog.db`
-
-### 本地运行（Windows / Linux / macOS）
-
-需要 [Node.js](https://nodejs.org/) >= 18。
+需要 [Node.js](https://nodejs.org/) >= 20。
 
 ```bash
 git clone https://github.com/ifndf/limblog.git
 cd limblog
 npm install
 npx prisma db push
-npm run dev           # 开发环境，访问 http://localhost:3000
-# npm run build && npm start   # 正式环境
+npm run dev           # 访问 http://localhost:3000
 ```
-
-> 开发模式下左下角会出现 Next.js 的调试浮层（Route / Bundler 等），这是框架自带的开发工具，生产环境不会出现。
 
 ---
 
-## 管理后台
+## 🔐 管理后台
 
-为了保持页面极简，前台不显示任何登录入口。
+前台页面不提供明显的登录入口，以保持视觉统一。
 
-- 登录地址：`http://你的域名/login`
-- 默认账号：`admin`
-- 默认密码：`123456`
-- 首次登录后请立即修改默认账号密码（设置 → 账户设置）
-- 登入后，支持文章编辑、搜索、删除
-- 支持markdown文章导入、导出，以便迁移
+- **登录地址**：`/login`
+- **默认账号**：`admin`
+- **默认密码**：`123456`
 
-**Powered by Lim**
+> [!IMPORTANT]
+> 部署成功后，请第一时间在 **设置 -> 账户设置** 中修改默认账号及密码以确保安全。
+
+---
+
+## 📜 许可
+
+本项目基于 MIT 协议开源。
+
+**Powered by [LimBlog](https://github.com/ifndf/limblog)**
