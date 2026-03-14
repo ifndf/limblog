@@ -35,31 +35,31 @@ export default async function RootLayout({
     <html lang="zh" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
-          <header className="py-8 px-5 lg:px-0">
-            <div className="max-w-2xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <Link href="/" className="text-xl font-bold tracking-tight">
+          <header className="py-10 px-5 lg:px-0">
+            <div className="max-w-2xl mx-auto">
+              <Link href="/" className="text-3xl font-bold tracking-tight block mb-4">
                 {blogName}
               </Link>
               <nav className="flex gap-4 items-center flex-wrap">
-                <Link href="/" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
                   Home
                 </Link>
-                <Link href="/blog" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
                   Blog
                 </Link>
-                <Link href="/friends" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                <Link href="/friends" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
                   Friends
                 </Link>
                 {session && (
-                  <>
-                    <Link href="/new" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
-                      New Post
+                  <div className="flex gap-4 items-center border-l border-neutral-300 dark:border-neutral-700 ml-2 pl-4">
+                    <Link href="/new" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 text-sm">
+                      New
                     </Link>
-                    <Link href="/settings" className="hover:underline text-sm text-neutral-600 dark:text-neutral-400 relative top-px">
+                    <Link href="/settings" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 text-sm">
                       Settings
                     </Link>
                     <LogoutButton />
-                  </>
+                  </div>
                 )}
               </nav>
             </div>
