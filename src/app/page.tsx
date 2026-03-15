@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
+import { Github, Twitter, Mail } from 'lucide-react'
 
 export default async function Home() {
   const configs = await prisma.siteConfig.findMany()
@@ -60,29 +61,48 @@ Start your writing journey now!
         </div>
       </section>
 
-
-
       <section className="pt-6">
-        <div className="flex gap-4 items-center">
+        <div className="flex gap-6 items-center">
           <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">联系我</span>
-          {siteConfig.contact_github && (
-            <a href={siteConfig.contact_github} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
-              GitHub
-            </a>
-          )}
-          {siteConfig.contact_twitter && (
-            <a href={siteConfig.contact_twitter} target="_blank" rel="noopener noreferrer" className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
-              Twitter
-            </a>
-          )}
-          {siteConfig.contact_mail && (
-            <a href={`mailto:${siteConfig.contact_mail}`} className="text-sm underline underline-offset-4 decoration-neutral-300 dark:decoration-neutral-700 hover:text-blue-600 dark:hover:text-blue-400">
-              Email
-            </a>
-          )}
-          {!siteConfig.contact_github && !siteConfig.contact_twitter && !siteConfig.contact_mail && (
-            <span className="text-sm text-neutral-400">（暂无）</span>
-          )}
+          <div className="flex gap-4 items-center">
+            {siteConfig.contact_github && (
+              <a 
+                href={siteConfig.contact_github} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
+                title="GitHub"
+                aria-label="GitHub"
+              >
+                <Github size={20} />
+              </a>
+            )}
+            {siteConfig.contact_twitter && (
+              <a 
+                href={siteConfig.contact_twitter} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-neutral-500 hover:text-sky-500 dark:text-neutral-400 dark:hover:text-sky-400 transition-colors"
+                title="Twitter"
+                aria-label="Twitter"
+              >
+                <Twitter size={20} />
+              </a>
+            )}
+            {siteConfig.contact_mail && (
+              <a 
+                href={`mailto:${siteConfig.contact_mail}`} 
+                className="text-neutral-500 hover:text-red-500 dark:text-neutral-400 dark:hover:text-red-400 transition-colors"
+                title="Email"
+                aria-label="Email"
+              >
+                <Mail size={20} />
+              </a>
+            )}
+            {!siteConfig.contact_github && !siteConfig.contact_twitter && !siteConfig.contact_mail && (
+              <span className="text-sm text-neutral-400 font-normal">（暂无联系方式）</span>
+            )}
+          </div>
         </div>
       </section>
     </div>
