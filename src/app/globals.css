@@ -1,29 +1,29 @@
+@import url('https://cdn.jsdelivr.net/npm/lxgw-wenkai-screen-webfont@1.1.0/style.css');
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fdfaf3; /* 米色/象牙白 */
+  --foreground: #2d2a24; /* 深木炭色 */
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #ededed;
+  --background: #121212; /* 非纯黑深灰 */
+  --foreground: #d4d4d8; /* 浅灰色文字 */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "LXGW WenKai Screen", "LXGW WenKai", sans-serif;
+  min-height: 100vh;
 }
 
 /* 确保所有输入框和文本域都可以被正常选中和操作 */
@@ -37,11 +37,6 @@ input, textarea {
 ::selection {
   background-color: rgba(59, 130, 246, 0.3); /* 浅蓝色半透明 */
   color: inherit;
-}
-
-/* 确保工具提示等装饰性元素不影响点击穿透 */
-.pointer-events-none-all {
-  pointer-events: none !important;
 }
 
 /* 确保文章内的表格在移动端可以横向滚动，而不是被挤压 */
@@ -63,7 +58,6 @@ input, textarea {
   margin-top: 2rem;
   margin-bottom: 2rem;
   border: 1px solid rgba(125, 125, 125, 0.1);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 .dark .prose iframe {
