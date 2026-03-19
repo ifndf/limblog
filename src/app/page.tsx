@@ -4,8 +4,10 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { Github, Twitter, Mail } from 'lucide-react'
+import { checkVisibility } from '@/lib/visibility'
 
 export default async function Home() {
+  await checkVisibility()
   const configs = await prisma.siteConfig.findMany()
   const siteConfig: Record<string, string> = {}
   for (const c of configs) {

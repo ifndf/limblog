@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Download, Upload, FileArchive, Trash2, User, Database, Settings as SettingsIcon, Sun, Moon, Monitor } from 'lucide-react'
+import { Download, Upload, FileArchive, Trash2, User, Database, Settings as SettingsIcon, Sun, Moon, Monitor, Globe, Lock } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
 export default function SettingsClient() {
@@ -36,6 +36,7 @@ export default function SettingsClient() {
         contact_github: '',
         contact_twitter: '',
         contact_mail: '',
+        site_visibility: 'public',
     })
     const [configSaving, setConfigSaving] = useState(false)
 
@@ -363,6 +364,28 @@ export default function SettingsClient() {
                                     >
                                         <Monitor size={16} />
                                         <span className="text-xs font-medium">系统</span>
+                                    </button>
+                                </div>
+
+                                <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mt-8 mb-4 flex items-center gap-2">
+                                    博客可见性
+                                </h3>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button
+                                        type="button"
+                                        onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'public' })}
+                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${(!siteConfig.site_visibility || siteConfig.site_visibility === 'public') ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
+                                    >
+                                        <Globe size={16} />
+                                        <span className="text-xs font-medium">公开模式</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'private' })}
+                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${siteConfig.site_visibility === 'private' ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
+                                    >
+                                        <Lock size={16} />
+                                        <span className="text-xs font-medium">私密模式</span>
                                     </button>
                                 </div>
                             </section>

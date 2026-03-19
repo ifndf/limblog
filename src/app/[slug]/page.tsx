@@ -7,6 +7,7 @@ import remarkBreaks from 'remark-breaks'
 import type { Metadata } from 'next'
 import { getSession } from '@/lib/auth'
 import PostActions from './PostActions'
+import { checkVisibility } from '@/lib/visibility'
 
 type Params = Promise<{ slug: string }>
 
@@ -24,6 +25,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function PostPage({ params }: { params: Params }) {
+    await checkVisibility()
     const { slug } = await params
     const post = await prisma.post.findUnique({ where: { slug } })
 

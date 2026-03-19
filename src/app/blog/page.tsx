@@ -3,10 +3,12 @@ import prisma from '@/lib/prisma'
 import Pagination from '../components/Pagination'
 import SearchInput from '../components/SearchInput'
 import { getSession } from '@/lib/auth'
+import { checkVisibility } from '@/lib/visibility'
 
 export const revalidate = 0
 
 export default async function Blog({ searchParams }: { searchParams: Promise<{ page?: string; q?: string }> }) {
+    await checkVisibility()
     const resolvedParams = await searchParams;
     const currentPage = Math.max(1, parseInt(resolvedParams.page || '1', 10));
     const query = resolvedParams.q || '';
