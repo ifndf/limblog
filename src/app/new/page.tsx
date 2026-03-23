@@ -8,6 +8,7 @@ import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
 import { Eye, Edit3, Save, Bold, Italic, Strikethrough, Heading1, Heading2, Heading3, Link as LinkIcon, Image as ImageIcon, Quote, Code, Braces, List, ListOrdered, ListChecks, Minus, Table } from 'lucide-react'
 import { slugify } from 'transliteration'
+import PreBlock from '@/components/PreBlock'
 
 export default function NewPost() {
     const [title, setTitle] = useState('')
@@ -284,6 +285,7 @@ export default function NewPost() {
                                         remarkPlugins={[remarkGfm, remarkBreaks]}
                                         rehypePlugins={[rehypeRaw]}
                                         components={{
+                                            pre: ({ node, ...props }) => <PreBlock {...props} />,
                                             table: ({ node, ...props }) => (
                                                 <div className="w-full overflow-x-auto my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg">
                                                     <table {...props} className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800" />

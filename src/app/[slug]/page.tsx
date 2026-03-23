@@ -8,6 +8,7 @@ import type { Metadata } from 'next'
 import { getSession } from '@/lib/auth'
 import PostActions from './PostActions'
 import { checkVisibility } from '@/lib/visibility'
+import PreBlock from '@/components/PreBlock'
 
 type Params = Promise<{ slug: string }>
 
@@ -59,6 +60,7 @@ export default async function PostPage({ params }: { params: Params }) {
                     remarkPlugins={[remarkGfm, remarkBreaks]}
                     rehypePlugins={[rehypeRaw]}
                     components={{
+                        pre: ({ node, ...props }) => <PreBlock {...props} />,
                         table: ({ node, ...props }) => (
                             <div className="w-full overflow-x-auto my-6 border border-neutral-200 dark:border-neutral-800 rounded-lg">
                                 <table {...props} className="min-w-full divide-y divide-neutral-200 dark:divide-neutral-800" />
