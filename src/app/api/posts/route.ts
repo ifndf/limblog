@@ -14,7 +14,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
     try {
-        const { title, content, slug } = await request.json()
+        const body = await request.json()
+        const { title, slug, contentBase64 } = body
+        const content = contentBase64 ? Buffer.from(contentBase64, 'base64').toString('utf8') : body.content
+        
         // 简单的服务端的 Slug 唯一性检查
         const existing = await prisma.post.findUnique({ where: { slug } })
         if (existing) {

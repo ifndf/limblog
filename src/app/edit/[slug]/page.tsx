@@ -46,10 +46,11 @@ export default function EditPost({ params }: { params: Promise<{ slug: string }>
         setError('')
 
         try {
+            const contentBase64 = btoa(Array.from(new TextEncoder().encode(content), b => String.fromCharCode(b)).join(''))
             const res = await fetch(`/api/posts/${originalSlug}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ title, slug, content }),
+                body: JSON.stringify({ title, slug, contentBase64 }),
             })
 
             if (!res.ok) {

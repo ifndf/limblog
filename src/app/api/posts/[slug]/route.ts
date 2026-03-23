@@ -27,7 +27,9 @@ export async function PUT(
 ) {
     const { slug } = await params
     try {
-        const { title, content, slug: newSlug } = await request.json()
+        const body = await request.json()
+        const { title, slug: newSlug, contentBase64 } = body
+        const content = contentBase64 ? Buffer.from(contentBase64, 'base64').toString('utf8') : body.content
 
         const post = await prisma.post.findUnique({ where: { slug } })
         if (!post) {
