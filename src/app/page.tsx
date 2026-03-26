@@ -17,40 +17,20 @@ export default async function Home() {
 
   const session = await getSession()
 
-  const defaultHomeContent = `
-Hello, 这是 LimBlog 主页！
+  const defaultHomeContent = `Welcome to **LimBlog** — a minimalist space built for writing that matters.
 
-在这里，你可以随时快速写作，记录技术心得或生活点滴。
+Here you can capture technical insights, document your thinking, or jot down ideas worth keeping.
 
-我们主旨在于“回归文字本身”：摒弃了花哨的动画与复杂的分类流，给你提供一个最纯粹、最安静的阅读与创作空间。
+Browse the [Blog](/blog) for all posts, or head to [Admin](/login) to manage your content.
 
-点击上方的 [博客](/blog) 可以查看全部文章列表。
-
-你可以随时登入 [后台](/login) 页面编辑关于你自己的独特介绍。
-
-开始你的文字之旅吧！
-
----
-
-Hello, this is the **LimBlog** homepage!
-
-Here, you can quickly write and record technical insights or life moments at any time.
-
-Our mission is to **"Return to the essence of writing"**: discarding fancy animations and complex categorization to provide you with the purest and quietest space for reading and creating.
-
-Click on [Blog](/blog) above to view the full list of articles.
-
-You can log in to the [Admin](/login) page at any time to edit your own unique introduction.
-
-Start your writing journey now!
-  `
+Less noise. More words.`
 
   const homeContent = siteConfig.home_content?.trim() || defaultHomeContent
 
   return (
-    <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500 relative">
+    <div className="max-w-3xl mx-auto px-5 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500 relative">
       {session && (
-        <div className="flex justify-end mb-4 absolute top-0 right-5 lg:right-0">
+        <div className="flex justify-end mb-4 absolute top-0 right-5">
           <Link
             href="/home/edit"
             className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -60,7 +40,7 @@ Start your writing journey now!
           </Link>
         </div>
       )}
-      <section className={`mt-4 space-y-6 ${session ? 'mt-12' : ''}`}>
+      <section className={`space-y-6 ${session ? 'pt-12' : 'pt-4'}`}>
         <div className="prose prose-neutral dark:prose-invert">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
@@ -79,13 +59,13 @@ Start your writing journey now!
 
       <section className="pt-6">
         <div className="flex gap-6 items-center">
-          <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">联系我</span>
+          <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400">Get in touch</span>
           <div className="flex gap-4 items-center">
             {siteConfig.contact_github && (
-              <a 
-                href={siteConfig.contact_github} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={siteConfig.contact_github}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-neutral-500 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors"
                 title="GitHub"
                 aria-label="GitHub"
@@ -94,10 +74,10 @@ Start your writing journey now!
               </a>
             )}
             {siteConfig.contact_twitter && (
-              <a 
-                href={siteConfig.contact_twitter} 
-                target="_blank" 
-                rel="noopener noreferrer" 
+              <a
+                href={siteConfig.contact_twitter}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-neutral-500 hover:text-sky-500 dark:text-neutral-400 dark:hover:text-sky-400 transition-colors"
                 title="Twitter"
                 aria-label="Twitter"
@@ -106,8 +86,8 @@ Start your writing journey now!
               </a>
             )}
             {siteConfig.contact_mail && (
-              <a 
-                href={`mailto:${siteConfig.contact_mail}`} 
+              <a
+                href={`mailto:${siteConfig.contact_mail}`}
                 className="text-neutral-500 hover:text-red-500 dark:text-neutral-400 dark:hover:text-red-400 transition-colors"
                 title="Email"
                 aria-label="Email"

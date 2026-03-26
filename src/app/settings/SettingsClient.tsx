@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Download, Upload, FileArchive, Trash2, User, Database, Settings as SettingsIcon, Sun, Moon, Monitor, Globe, Lock } from 'lucide-react'
 import { useTheme } from 'next-themes'
 
@@ -25,6 +26,7 @@ export default function SettingsClient() {
     const [importing, setImporting] = useState(false)
     const [exporting, setExporting] = useState(false)
     const [deletingAll, setDeletingAll] = useState(false)
+    const [deleteSuccess, setDeleteSuccess] = useState(false)
     const [importResult, setImportResult] = useState<{ imported: number; skipped: number; errors: string[] } | null>(null)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -41,39 +43,87 @@ export default function SettingsClient() {
     const [configSaving, setConfigSaving] = useState(false)
 
     const router = useRouter()
+    const queryClient = useQueryClient()
+    const initRef = useRef(false)
 
+    const { data: siteConfigData } = useQuery({
+        queryKey: ['site-config'],
+        queryFn: async () => {
+            const res = await fetch('/api/site-config')
+            if (!res.ok) throw new Error('Failed to load config')
+            return res.json()
+        },
+    })
+
+    // Sync siteConfig with query data when it first loads
     useEffect(() => {
-        fetch('/api/site-config')
-            .then(res => res.json())
-            .then(data => {
-                setSiteConfig(prev => ({ ...prev, ...data }))
-            })
-            .catch(err => console.error('Failed to load config:', err))
-    }, [])
+        if (siteConfigData && !initRef.current) {
+            initRef.current = true
+            setSiteConfig(prev => ({ ...prev, ...siteConfigData }))
+        }
+    }, [siteConfigData])
 
-    const handleUpdate = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setLoading(true)
-        setError('')
-        setSuccess('')
+    // Auto-dismiss success message after 3 seconds
+    useEffect(() => {
+        if (success) {
+            const timer = setTimeout(() => setSuccess(''), 3000)
+            return () => clearTimeout(timer)
+        }
+    }, [success])
 
-        try {
+    // Mutations
+    const credentialsMutation = useMutation({
+        mutationFn: async (data: { username: string; password: string }) => {
             const res = await fetch('/api/auth/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password })
+                body: JSON.stringify(data)
             })
-
             if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || '更新失败')
+                const resData = await res.json()
+                throw new Error(resData.error || '更新失败')
             }
-
+            return res.json()
+        },
+        onSuccess: () => {
             setSuccess('凭据更新成功！若修改了密码，可能需要重新登录。')
             setUsername('')
             setPassword('')
-        } catch (err: any) {
+        },
+        onError: (err: Error) => {
             setError(err.message)
+        },
+    })
+
+    const siteConfigMutation = useMutation({
+        mutationFn: async (data: typeof siteConfig) => {
+            const res = await fetch('/api/site-config', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            if (!res.ok) {
+                const resData = await res.json()
+                throw new Error(resData.error || '保存失败')
+            }
+            return res.json()
+        },
+        onSuccess: () => {
+            setSuccess('站点配置已成功保存！')
+            queryClient.invalidateQueries({ queryKey: ['site-config'] })
+        },
+        onError: (err: Error) => {
+            setError(err.message)
+        },
+    })
+
+    const handleUpdate = async () => {
+        setError('')
+        setSuccess('')
+        setLoading(true)
+
+        try {
+            await credentialsMutation.mutateAsync({ username, password })
         } finally {
             setLoading(false)
         }
@@ -142,12 +192,13 @@ export default function SettingsClient() {
 
         setDeletingAll(true)
         setError('')
+        setDeleteSuccess(false)
         try {
             const res = await fetch('/api/posts/delete-all', { method: 'DELETE' })
             if (!res.ok) throw new Error('删除失败')
 
             const result = await res.json()
-            alert(`成功删除了 ${result.deleted} 篇文章！`)
+            setDeleteSuccess(true)
             router.refresh()
         } catch (err: any) {
             setError(err.message)
@@ -156,133 +207,125 @@ export default function SettingsClient() {
         }
     }
 
-    const handleSaveSiteConfig = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setConfigSaving(true)
+    const handleSaveSiteConfig = async () => {
         setError('')
         setSuccess('')
+        setConfigSaving(true)
 
         try {
-            const res = await fetch('/api/site-config', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(siteConfig)
-            })
-
-            if (!res.ok) {
-                const data = await res.json()
-                throw new Error(data.error || '保存失败')
-            }
-
-            setSuccess('站点配置已成功保存！')
-            router.refresh()
-        } catch (err: any) {
-            setError(err.message)
+            await siteConfigMutation.mutateAsync(siteConfig)
         } finally {
             setConfigSaving(false)
         }
     }
 
     return (
-        <div className="max-w-4xl mx-auto px-5 lg:px-0 mt-10">
-            <h1 className="text-3xl font-extrabold tracking-tight mb-8">后台管理</h1>
+        <div className="max-w-3xl mx-auto px-5 mt-10">
 
-            <div className="flex flex-col md:flex-row gap-8">
-                {/* 侧边栏 */}
-                <aside className="w-full md:w-64 flex-shrink-0 space-y-2 relative">
+            <div className="flex flex-col md:flex-row gap-0 rounded-2xl border border-stone-200 dark:border-neutral-800 overflow-hidden bg-white dark:bg-stone-800 shadow-sm">
+                {/* 侧边栏 - 卡片式导航 */}
+                <aside className="w-full md:w-56 flex-shrink-0 bg-stone-100 dark:bg-stone-900/50 p-3 space-y-1">
+                    <div className="text-xs font-semibold text-stone-400 dark:text-neutral-500 uppercase tracking-wider px-3 pt-2 pb-1">导航</div>
                     <button
                         onClick={() => { setActiveTab('account'); setError(''); setSuccess('') }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === 'account' ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'account' ? 'bg-white dark:bg-neutral-800 text-stone-900 dark:text-neutral-100 shadow-sm border border-stone-300 dark:border-neutral-700' : 'text-stone-800 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800'}`}
                     >
-                        <User size={18} />
+                        <User size={16} />
                         账户设置
                     </button>
                     <button
                         onClick={() => { setActiveTab('data'); setError(''); setSuccess('') }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === 'data' ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'data' ? 'bg-white dark:bg-neutral-800 text-stone-900 dark:text-neutral-100 shadow-sm border border-stone-300 dark:border-neutral-700' : 'text-stone-800 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800'}`}
                     >
-                        <Database size={18} />
+                        <Database size={16} />
                         数据管理
                     </button>
                     <button
                         onClick={() => { setActiveTab('site'); setError(''); setSuccess('') }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === 'site' ? 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800'}`}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${activeTab === 'site' ? 'bg-white dark:bg-neutral-800 text-stone-900 dark:text-neutral-100 shadow-sm border border-stone-300 dark:border-neutral-700' : 'text-stone-800 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-neutral-100 hover:bg-white dark:hover:bg-neutral-800'}`}
                     >
-                        <SettingsIcon size={18} />
+                        <SettingsIcon size={16} />
                         站点配置
                     </button>
                 </aside>
 
+                {/* 分隔线 */}
+                <div className="hidden md:block w-px bg-stone-300 dark:bg-neutral-800" />
+
                 {/* 主内容区 */}
-                <div className="flex-1">
+                <div className="flex-1 p-6">
                     {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-6 dark:bg-red-900/20 dark:text-red-400 animate-in fade-in">
+                        <div className="mb-5 px-4 py-3 rounded-lg bg-red-50 text-red-600 text-sm dark:bg-red-900/20 dark:text-red-400 border border-red-100 dark:border-red-900 animate-in fade-in">
                             {error}
                         </div>
                     )}
                     {success && (
-                        <div className="bg-green-50 text-green-600 p-3 rounded-md text-sm mb-6 dark:bg-green-900/20 dark:text-green-400 animate-in fade-in">
+                        <div className="mb-5 px-4 py-3 rounded-lg bg-green-50 text-green-600 text-sm dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-900 animate-in fade-in">
                             {success}
                         </div>
                     )}
 
                     {activeTab === 'account' && (
-                        <div className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800 animate-in fade-in slide-in-from-bottom-2">
-                            <h2 className="text-xl font-bold tracking-tight mb-6">账户设置</h2>
-                            <form onSubmit={handleUpdate} className="flex flex-col gap-4">
-                                <div>
-                                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">新用户名 <span className="text-neutral-500 font-normal">(留空代表不修改)</span></label>
-                                    <input
-                                        type="text"
-                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                    />
+                        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
+                            <div>
+                                <h2 className="text-base font-semibold text-stone-800 dark:text-neutral-100 mb-4">账户设置</h2>
+                                <div className="bg-white dark:bg-stone-800 rounded-xl p-5 space-y-4">
+                                    <div>
+                                        <label className="text-sm font-medium text-stone-700 dark:text-neutral-300 block mb-1.5">新用户名 <span className="text-neutral-400 font-normal text-xs">(留空不修改)</span></label>
+                                        <input
+                                            type="text"
+                                            className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
+                                            placeholder="admin"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-sm font-medium text-stone-700 dark:text-neutral-300 block mb-1.5">新密码 <span className="text-neutral-400 font-normal text-xs">(留空不修改)</span></label>
+                                        <input
+                                            type="password"
+                                            className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
+                                            placeholder="••••••••"
+                                        />
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        onClick={handleUpdate}
+                                        disabled={loading || (!username && !password)}
+                                        className="w-full bg-stone-800 dark:bg-neutral-100 text-white dark:text-stone-900 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-stone-700 dark:hover:bg-neutral-200 transition-colors disabled:opacity-40"
+                                    >
+                                        {loading ? '保存中...' : '保存更改'}
+                                    </button>
                                 </div>
-                                <div>
-                                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">新密码 <span className="text-neutral-500 font-normal">(留空代表不修改)</span></label>
-                                    <input
-                                        type="password"
-                                        className="w-full mt-1 border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 block cursor-text"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={loading || (!username && !password)}
-                                    className="w-full mt-4 bg-neutral-900 text-white px-6 py-2 rounded-md hover:bg-neutral-800 disabled:opacity-50 transition-colors dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-                                >
-                                    {loading ? '保存中...' : '保存更改'}
-                                </button>
-                            </form>
+                            </div>
                         </div>
                     )}
 
                     {activeTab === 'data' && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-                            <div className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800">
-                                <h2 className="text-xl font-bold tracking-tight mb-2">文章管理</h2>
-                                <p className="text-sm text-neutral-500 mb-6">导入导出 Markdown 格式文章或清空所有数据。</p>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
+                            <h2 className="text-base font-semibold text-stone-800 dark:text-neutral-100">文章管理</h2>
 
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="bg-white dark:bg-stone-800 rounded-xl p-5">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                     <button
                                         onClick={handleExport}
                                         disabled={exporting}
-                                        className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl hover:border-neutral-500 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all disabled:opacity-50 group"
+                                        className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-white dark:hover:bg-neutral-800 transition-all disabled:opacity-40 group"
                                     >
-                                        <Download size={24} className="text-neutral-500 group-hover:text-neutral-700 dark:group-hover:text-neutral-300 transition-colors" />
-                                        <div className="text-center mt-2">
-                                            <p className="font-medium text-sm">{exporting ? '打包中...' : '导出所有文章'}</p>
-                                            <p className="text-xs text-neutral-500 mt-1">下载为 .zip 压缩包</p>
+                                        <Download size={20} className="text-neutral-400 group-hover:text-stone-600 dark:group-hover:text-neutral-300" />
+                                        <div>
+                                            <p className="text-sm font-medium text-stone-700 dark:text-neutral-200">{exporting ? '打包中...' : '导出文章'}</p>
+                                            <p className="text-xs text-neutral-400 mt-0.5">下载 .zip 压缩包</p>
                                         </div>
                                     </button>
 
-                                    <label className="flex flex-col items-center justify-center gap-2 p-6 border-2 border-dashed border-neutral-300 dark:border-neutral-700 rounded-xl hover:border-neutral-500 dark:hover:border-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-all cursor-pointer group">
-                                        <Upload size={24} className="text-neutral-500 group-hover:text-neutral-700 dark:group-hover:text-neutral-300 transition-colors" />
-                                        <div className="text-center mt-2">
-                                            <p className="font-medium text-sm">{importing ? '导入中...' : '导入文章'}</p>
-                                            <p className="text-xs text-neutral-500 mt-1">支持 .zip 或 .md</p>
+                                    <label className="flex items-center gap-3 p-4 rounded-xl border-2 border-dashed border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:bg-white dark:hover:bg-neutral-800 transition-all cursor-pointer group">
+                                        <Upload size={20} className="text-neutral-400 group-hover:text-stone-600 dark:group-hover:text-neutral-300" />
+                                        <div>
+                                            <p className="text-sm font-medium text-stone-700 dark:text-neutral-200">{importing ? '导入中...' : '导入文章'}</p>
+                                            <p className="text-xs text-neutral-400 mt-0.5">.zip 或 .md 文件</p>
                                         </div>
                                         <input
                                             ref={fileInputRef}
@@ -296,154 +339,152 @@ export default function SettingsClient() {
                                 </div>
 
                                 {importResult && (
-                                    <div className="mt-6 p-4 rounded-lg bg-neutral-50 dark:bg-neutral-800/50 border border-neutral-200 dark:border-neutral-700">
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <FileArchive size={16} className="text-neutral-500" />
-                                            <span className="font-medium text-sm">导入结果</span>
-                                        </div>
-                                        <div className="flex gap-6 text-sm mb-2">
-                                            <span className="text-green-600 dark:text-green-400">✓ 成功导入 {importResult.imported} 篇</span>
-                                            {importResult.skipped > 0 && (
-                                                <span className="text-yellow-600 dark:text-yellow-400">⚠ 跳过 {importResult.skipped} 篇</span>
-                                            )}
+                                    <div className="mt-4 p-3 rounded-lg bg-white dark:bg-neutral-800 border border-stone-200 dark:border-neutral-700">
+                                        <div className="flex items-center gap-4 text-sm">
+                                            <span className="text-green-600 dark:text-green-400">✓ 导入 {importResult.imported} 篇</span>
+                                            {importResult.skipped > 0 && <span className="text-yellow-600 dark:text-yellow-400">⚠ 跳过 {importResult.skipped} 篇</span>}
                                         </div>
                                         {importResult.errors.length > 0 && (
-                                            <ul className="text-xs text-neutral-500 space-y-1 mt-2">
-                                                {importResult.errors.map((err, i) => (
-                                                    <li key={i}>• {err}</li>
-                                                ))}
+                                            <ul className="mt-2 text-xs text-neutral-400 space-y-1">
+                                                {importResult.errors.map((err, i) => <li key={i}>• {err}</li>)}
                                             </ul>
                                         )}
                                     </div>
                                 )}
                             </div>
 
-                            <div className="p-6 border border-red-200 rounded-xl dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/10">
-                                <h2 className="text-xl font-bold tracking-tight mb-2 text-red-600 dark:text-red-400">危险操作</h2>
-                                <p className="text-sm text-red-600/80 dark:text-red-400/80 mb-4">清空博客的所有文章数据。此操作不可恢复，请务必先确认是否需要导出数据。</p>
-                                <button
-                                    onClick={handleDeleteAll}
-                                    disabled={deletingAll}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-md transition-colors disabled:opacity-50"
-                                >
-                                    <Trash2 size={16} />
-                                    {deletingAll ? '正在清空...' : '删除所有文章'}
-                                </button>
+                            {deleteSuccess && (
+                                <div className="px-4 py-3 rounded-lg bg-green-50 text-green-600 text-sm dark:bg-green-900/20 dark:text-green-400 border border-green-100 dark:border-green-900">
+                                    文章已全部清空。
+                                </div>
+                            )}
+
+                            <div className="bg-red-50 dark:bg-red-900/10 rounded-xl p-5 border border-red-100 dark:border-red-900/40">
+                                <div className="flex items-center justify-between gap-4">
+                                    <div>
+                                        <h3 className="text-sm font-semibold text-red-600 dark:text-red-400">危险操作</h3>
+                                        <p className="text-xs text-red-500/70 dark:text-red-400/60 mt-1">删除所有文章，数据不可恢复</p>
+                                    </div>
+                                    <button
+                                        onClick={handleDeleteAll}
+                                        disabled={deletingAll}
+                                        className="flex items-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-40 shrink-0"
+                                    >
+                                        <Trash2 size={14} />
+                                        {deletingAll ? '删除中...' : '删除全部'}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
 
                     {activeTab === 'site' && (
-                        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
-                            <section className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800">
-                                <h2 className="text-xl font-bold tracking-tight mb-6">站点配置</h2>
-                                <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-4 flex items-center gap-2">
-                                    界面主题
-                                </h3>
-                                <div className="grid grid-cols-3 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setTheme('light')}
-                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'light' ? 'border-neutral-900 bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
-                                    >
-                                        <Sun size={16} />
-                                        <span className="text-xs font-medium">浅色</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setTheme('dark')}
-                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'dark' ? 'border-neutral-900 bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
-                                    >
-                                        <Moon size={16} />
-                                        <span className="text-xs font-medium">深色</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setTheme('system')}
-                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${mounted && theme === 'system' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
-                                    >
-                                        <Monitor size={16} />
-                                        <span className="text-xs font-medium">系统</span>
-                                    </button>
-                                </div>
+                        <div className="space-y-5 animate-in fade-in slide-in-from-bottom-2">
+                            <h2 className="text-base font-semibold text-stone-800 dark:text-neutral-100">站点配置</h2>
 
-                                <h3 className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mt-8 mb-4 flex items-center gap-2">
-                                    博客可见性
-                                </h3>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'public' })}
-                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${(!siteConfig.site_visibility || siteConfig.site_visibility === 'public') ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
-                                    >
-                                        <Globe size={16} />
-                                        <span className="text-xs font-medium">公开模式</span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'private' })}
-                                        className={`flex items-center justify-center gap-2 p-2.5 rounded-md border transition-all ${siteConfig.site_visibility === 'private' ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-600' : 'border-neutral-200 dark:border-neutral-800 hover:border-neutral-300 dark:hover:border-neutral-700'}`}
-                                    >
-                                        <Lock size={16} />
-                                        <span className="text-xs font-medium">私密模式</span>
-                                    </button>
-                                </div>
-                            </section>
-
-                            <form onSubmit={handleSaveSiteConfig} className="p-6 border border-neutral-200 rounded-xl dark:border-neutral-800 space-y-6">
-                                <div className="grid grid-cols-1 gap-5">
-                                    <div>
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">顶部博客名</label>
-                                        <input
-                                            type="text"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
-                                            value={siteConfig.blog_name}
-                                            onChange={(e) => setSiteConfig({ ...siteConfig, blog_name: e.target.value })}
-                                            placeholder="LimBlog"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-2">
-                                    <div>
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">GitHub 链接</label>
-                                        <input
-                                            type="url"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
-                                            value={siteConfig.contact_github}
-                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_github: e.target.value })}
-                                            placeholder="https://github.com/..."
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">Twitter 链接</label>
-                                        <input
-                                            type="url"
-                                            className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
-                                            value={siteConfig.contact_twitter}
-                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_twitter: e.target.value })}
-                                            placeholder="https://twitter.com/..."
-                                        />
-                                    </div>
-                                </div>
-                                <div className="sm:col-span-2">
-                                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">邮箱地址</label>
+                            <div className="bg-white dark:bg-stone-800 rounded-xl p-5 space-y-5">
+                                <div>
+                                    <label className="text-sm font-medium text-stone-700 dark:text-neutral-300 block mb-1.5">博客名称</label>
                                     <input
-                                        type="email"
-                                        className="w-full border border-neutral-300 p-2 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-[3px] focus:outline-blue-500/20 dark:bg-neutral-800 dark:border-neutral-700 text-sm block cursor-text"
-                                        value={siteConfig.contact_mail}
-                                        onChange={(e) => setSiteConfig({ ...siteConfig, contact_mail: e.target.value })}
-                                        placeholder="hello@example.com"
+                                        type="text"
+                                        className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2.5 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                        value={siteConfig.blog_name}
+                                        onChange={(e) => setSiteConfig({ ...siteConfig, blog_name: e.target.value })}
+                                        placeholder="LimBlog"
                                     />
                                 </div>
-                                <button
-                                    type="submit"
-                                    disabled={configSaving}
-                                    className="w-full mt-4 bg-neutral-900 text-white px-6 py-2.5 rounded-md hover:bg-neutral-800 disabled:opacity-50 transition-colors dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 font-medium"
-                                >
-                                    {configSaving ? '保存中...' : '保存站点配置'}
-                                </button>
-                            </form>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 block mb-1.5">GitHub</label>
+                                        <input
+                                            type="url"
+                                            className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            value={siteConfig.contact_github}
+                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_github: e.target.value })}
+                                            placeholder="github.com/..."
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 block mb-1.5">Twitter</label>
+                                        <input
+                                            type="url"
+                                            className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            value={siteConfig.contact_twitter}
+                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_twitter: e.target.value })}
+                                            placeholder="twitter.com/..."
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-medium text-neutral-500 dark:text-neutral-400 block mb-1.5">邮箱</label>
+                                        <input
+                                            type="email"
+                                            className="w-full border border-stone-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-2 rounded-lg text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                            value={siteConfig.contact_mail}
+                                            onChange={(e) => setSiteConfig({ ...siteConfig, contact_mail: e.target.value })}
+                                            placeholder="hello@..."
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white dark:bg-stone-800 rounded-xl p-5 space-y-4">
+                                <div>
+                                    <p className="text-sm font-medium text-stone-700 dark:text-neutral-300 mb-3">界面主题</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setTheme('light')}
+                                            className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${mounted && theme === 'light' ? 'border-neutral-900 bg-stone-800 text-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-white' : 'border-stone-200 dark:border-neutral-700 text-stone-600 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'}`}
+                                        >
+                                            <Sun size={14} />浅色
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setTheme('dark')}
+                                            className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${mounted && theme === 'dark' ? 'border-neutral-900 bg-stone-800 text-white dark:border-neutral-600 dark:bg-neutral-700 dark:text-white' : 'border-stone-200 dark:border-neutral-700 text-stone-600 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'}`}
+                                        >
+                                            <Moon size={14} />深色
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setTheme('system')}
+                                            className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${mounted && theme === 'system' ? 'border-blue-500 bg-blue-50 text-blue-600 dark:border-blue-600 dark:bg-blue-900/30 dark:text-blue-400' : 'border-stone-200 dark:border-neutral-700 text-stone-600 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'}`}
+                                        >
+                                            <Monitor size={14} />系统
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-sm font-medium text-stone-700 dark:text-neutral-300 mb-3">博客可见性</p>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'public' })}
+                                            className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${(!siteConfig.site_visibility || siteConfig.site_visibility === 'public') ? 'border-green-500 bg-green-50 text-green-600 dark:border-green-600 dark:bg-green-900/20 dark:text-green-400' : 'border-stone-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'}`}
+                                        >
+                                            <Globe size={14} />公开
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setSiteConfig({ ...siteConfig, site_visibility: 'private' })}
+                                            className={`flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border text-xs font-medium transition-all ${siteConfig.site_visibility === 'private' ? 'border-red-500 bg-red-50 text-red-600 dark:border-red-600 dark:bg-red-900/20 dark:text-red-400' : 'border-stone-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 hover:border-neutral-400 dark:hover:border-neutral-500'}`}
+                                        >
+                                            <Lock size={14} />私密
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleSaveSiteConfig}
+                                disabled={configSaving}
+                                className="w-full bg-stone-800 dark:bg-neutral-100 text-white dark:text-stone-900 px-6 py-3 rounded-xl text-sm font-medium hover:bg-stone-700 dark:hover:bg-neutral-200 transition-colors disabled:opacity-40"
+                            >
+                                {configSaving ? '保存中...' : '保存站点配置'}
+                            </button>
                         </div>
                     )}
                 </div>

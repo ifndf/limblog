@@ -7,7 +7,7 @@ import { getSession } from '@/lib/auth'
 import Link from 'next/link'
 import { Pencil } from 'lucide-react'
 
-export default async function FriendsPage() {
+export default async function LinksPage() {
     await checkVisibility()
     const configs = await prisma.siteConfig.findMany()
     const siteConfig: Record<string, string> = {}
@@ -17,24 +17,18 @@ export default async function FriendsPage() {
 
     const session = await getSession()
 
-    const defaultFriendsContent = `
-# Friends
-
-这里是我的朋友们。排名不分先后！
-
----
-
-目前还没有添加友链。你可以在后台的“站点配置”中进行添加。
+    const defaultLinksContent = `
+No links yet. Add some via the admin panel.
     `
 
-    const friendsContent = siteConfig.friends_content?.trim() || defaultFriendsContent
+    const linksContent = siteConfig.friends_content?.trim() || defaultLinksContent
 
     return (
-        <div className="max-w-2xl mx-auto px-5 lg:px-0 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20 relative">
+        <div className="max-w-3xl mx-auto px-5 mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-20 relative">
             {session && (
-                <div className="flex justify-end mb-4 absolute top-0 right-5 lg:right-0">
+                <div className="flex justify-end mb-4 absolute top-0 right-5">
                     <Link
-                        href="/friends/edit"
+                        href="/links/edit"
                         className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                     >
                         <Pencil size={14} />
@@ -54,7 +48,7 @@ export default async function FriendsPage() {
                         ),
                     }}
                 >
-                    {friendsContent}
+                    {linksContent}
                 </ReactMarkdown>
             </div>
         </div>

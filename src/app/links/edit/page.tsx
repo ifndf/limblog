@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Save } from 'lucide-react'
 import MarkdownEditor from '@/components/MarkdownEditor'
 
-export default function EditHomePage() {
+export default function EditLinksPage() {
     const [content, setContent] = useState('')
     const [loading, setLoading] = useState(false)
     const [fetching, setFetching] = useState(true)
@@ -20,14 +20,9 @@ export default function EditHomePage() {
                 if (!res.ok) throw new Error('获取配置失败')
                 const data = await res.json()
 
-                const defaultHomeContent = `Welcome to **LimBlog** — a minimalist space built for writing that matters.
-
-Here you can capture technical insights, document your thinking, or jot down ideas worth keeping.
-
-Browse the [Blog](/blog) for all posts, or head to [Admin](/login) to manage your content.
-
-Less noise. More words.`
-                setContent(data.home_content?.trim() || defaultHomeContent.trim())
+                const defaultLinksContent = `No links yet. Add some via the admin panel.
+`
+                setContent(data.friends_content?.trim() || defaultLinksContent.trim())
             } catch (err: any) {
                 setError(err.message)
             } finally {
@@ -45,7 +40,7 @@ Less noise. More words.`
             const res = await fetch('/api/site-config', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ home_content: content }),
+                body: JSON.stringify({ friends_content: content }),
             })
 
             if (!res.ok) {
@@ -53,7 +48,7 @@ Less noise. More words.`
                 throw new Error(data.error || '更新失败')
             }
 
-            router.push('/')
+            router.push('/links')
             router.refresh()
         } catch (err: any) {
             setError(err.message)
@@ -73,7 +68,7 @@ Less noise. More words.`
     return (
         <div className="flex flex-col min-h-[calc(100dvh-140px)] md:h-[calc(100vh-140px)] h-auto max-w-7xl w-full mx-auto px-5 gap-6 pb-10 md:pb-0">
             <div className="flex items-center justify-between shrink-0">
-                <h1 className="text-2xl font-bold tracking-tight">编辑主页内容</h1>
+                <h1 className="text-2xl font-bold tracking-tight">编辑链接内容</h1>
                 <div className="flex gap-2">
                     <button
                         onClick={() => router.back()}

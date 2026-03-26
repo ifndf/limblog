@@ -18,11 +18,11 @@ export default function SearchInput({ defaultValue = '' }: { defaultValue?: stri
     }
 
     return (
-        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 w-full max-w-sm mb-6">
+        <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 w-full sm:max-w-sm">
             <div className="relative w-full">
                 <input
                     type="text"
-                    placeholder="Search posts..."
+                    placeholder="搜索文章..."
                     className="w-full bg-transparent border-b border-neutral-300 dark:border-neutral-700 py-2 pl-2 pr-8 focus:outline-none focus:border-neutral-500 dark:focus:border-neutral-500 text-sm font-mono text-neutral-800 dark:text-neutral-200"
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}

@@ -37,7 +37,7 @@ export default async function PostPage({ params }: { params: Params }) {
     const session = await getSession()
 
     return (
-        <article className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-2xl mx-auto px-5 lg:px-0">
+        <article className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-3xl mx-auto px-5">
             <header className="space-y-4 text-center mt-12 mb-16">
                 <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight mx-auto">
                     {post.title}

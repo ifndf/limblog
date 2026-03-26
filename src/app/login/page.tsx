@@ -35,11 +35,11 @@ export default function Login() {
     }
 
     return (
-        <div className="max-w-md mx-auto mt-20 p-6 border border-neutral-200 rounded-xl dark:border-neutral-800">
+        <div className="max-w-md mx-auto mt-20 px-6 py-8 border border-neutral-200 rounded-xl dark:border-neutral-800">
             <h1 className="text-2xl font-bold tracking-tight mb-6 text-center">后台登录</h1>
 
             {error && (
-                <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4">
+                <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm mb-4 dark:bg-red-900/20 dark:text-red-400">
                     {error}
                 </div>
             )}

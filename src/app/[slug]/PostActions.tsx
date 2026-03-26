@@ -7,11 +7,13 @@ import { Pencil, Trash2 } from 'lucide-react'
 export default function PostActions({ slug }: { slug: string }) {
     const router = useRouter()
     const [deleting, setDeleting] = useState(false)
+    const [deleteError, setDeleteError] = useState('')
 
     const handleDelete = async () => {
         if (!confirm('确定要删除这篇文章吗？此操作不可撤销。')) return
 
         setDeleting(true)
+        setDeleteError('')
         try {
             const res = await fetch(`/api/posts/${slug}`, { method: 'DELETE' })
             if (!res.ok) {
@@ -21,13 +23,17 @@ export default function PostActions({ slug }: { slug: string }) {
             router.push('/blog')
             router.refresh()
         } catch (err: any) {
-            alert(err.message)
+            setDeleteError(err.message)
             setDeleting(false)
         }
     }
 
     return (
-        <div className="flex gap-3 justify-center mt-4">
+        <div className="flex flex-col items-center gap-3 mt-4">
+            {deleteError && (
+                <p className="text-red-500 text-sm">{deleteError}</p>
+            )}
+            <div className="flex gap-3">
             <button
                 onClick={() => router.push(`/edit/${slug}`)}
                 className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
@@ -43,6 +49,7 @@ export default function PostActions({ slug }: { slug: string }) {
                 <Trash2 size={14} />
                 {deleting ? '删除中...' : '删除'}
             </button>
+            </div>
         </div>
     )
 }

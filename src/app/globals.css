@@ -5,13 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fdfaf3; /* 米色/象牙白 */
-  --foreground: #2d2a24; /* 深木炭色 */
+  --background: #faf9f7;
+  --foreground: #292524;
 }
 
 .dark {
-  --background: #121212; /* 非纯黑深灰 */
-  --foreground: #d4d4d8; /* 浅灰色文字 */
+  --background: #0f0f0f;
+  --foreground: #e5e5e5;
 }
 
 @theme inline {
@@ -24,6 +24,8 @@ body {
   color: var(--foreground);
   font-family: "LXGW WenKai Screen", "LXGW WenKai", sans-serif;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 确保所有输入框和文本域都可以被正常选中和操作 */
@@ -63,4 +65,12 @@ input, textarea {
 .dark .prose iframe {
   border-color: rgba(255, 255, 255, 0.05);
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* 复古像素风阴影 */
+.pixel-shadow {
+  box-shadow: 4px 4px 0px 0px var(--pixel-shadow-color, #1c1917);
+}
+.dark .pixel-shadow {
+  --pixel-shadow-color: #e5e5e5;
 }

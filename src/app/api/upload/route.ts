@@ -22,7 +22,44 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'No file uploaded' }, { status: 400 })
         }
 
+        // MIME type whitelist validation
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+        if (!allowedMimeTypes.includes(file.type)) {
+            return NextResponse.json(
+                { error: 'Invalid file type. Allowed types: JPEG, PNG, GIF, WebP' },
+                { status: 400 }
+            )
+        }
+
+        // File size limit (5MB)
+        const maxSize = 5 * 1024 * 1024
+        if (file.size > maxSize) {
+            return NextResponse.json(
+                { error: 'File too large. Maximum size is 5MB' },
+                { status: 400 }
+            )
+        }
+
         const buffer = Buffer.from(await file.arrayBuffer())
+
+        // Magic bytes validation for additional security
+        const magicBytes: Record<string, number[]> = {
+            'image/jpeg': [0xFF, 0xD8, 0xFF],
+            'image/png': [0x89, 0x50, 0x4E, 0x47],
+            'image/gif': [0x47, 0x49, 0x46, 0x38],
+            // WebP: RIFF header + WEBP at offset 8
+        }
+
+        const expectedMagic = magicBytes[file.type]
+        if (expectedMagic) {
+            const isMatch = expectedMagic.every((byte, i) => buffer[i] === byte)
+            if (!isMatch) {
+                return NextResponse.json(
+                    { error: 'File content does not match declared MIME type' },
+                    { status: 400 }
+                )
+            }
+        }
 
         // Create safe filename
         const ext = path.extname(file.name).toLowerCase()

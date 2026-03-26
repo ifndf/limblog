@@ -5,6 +5,7 @@ import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import LogoutButton from "./components/LogoutButton";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { Providers } from "./components/Providers";
 import prisma from "@/lib/prisma";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -34,41 +35,41 @@ export default async function RootLayout({
       </head>
       <body className={`${inter.className} min-h-screen flex flex-col antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-          <header className="py-10 px-5 lg:px-0">
-            <div className="max-w-2xl mx-auto">
-              <Link href="/" className="text-3xl font-bold tracking-tight block mb-4">
-                {blogName}
-              </Link>
-              <nav className="flex gap-4 items-center flex-wrap">
-                <Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
-                  Home
+          <Providers>
+            <header className="py-6">
+              <div className="max-w-3xl mx-auto px-5 flex items-center gap-5 flex-wrap">
+                <Link href="/" className="text-base font-bold tracking-tight text-stone-900 dark:text-neutral-100">
+                  {blogName}
                 </Link>
-                <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
-                  Blog
-                </Link>
-                <Link href="/friends" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
-                  Friends
-                </Link>
-                {session && (
-                  <div className="flex gap-4 items-center border-l border-neutral-300 dark:border-neutral-700 ml-2 pl-4">
-                    <Link href="/new" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 text-sm">
-                      New
-                    </Link>
-                    <Link href="/settings" className="text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 text-sm">
-                      Settings
-                    </Link>
-                    <LogoutButton />
-                  </div>
-                )}
-              </nav>
-            </div>
-          </header>
-          <main className="flex-grow w-full">
-            {children}
-          </main>
-          <footer className="py-10 text-center text-sm text-neutral-500 mt-20">
-            <p>Powered by <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{repoName}</a></p>
-          </footer>
+                <nav className="flex gap-5 items-center">
+                  <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
+                    Blog
+                  </Link>
+                  <Link href="/links" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
+                    Links
+                  </Link>
+                  {session && (
+                    <>
+                      <span className="w-px h-4 bg-neutral-300 dark:bg-neutral-700" />
+                      <Link href="/new" className="text-sm text-stone-600 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors">
+                        New
+                      </Link>
+                      <Link href="/settings" className="text-sm text-stone-600 hover:text-stone-900 dark:text-neutral-400 dark:hover:text-neutral-100 transition-colors">
+                        Settings
+                      </Link>
+                      <LogoutButton />
+                    </>
+                  )}
+                </nav>
+              </div>
+            </header>
+            <main className="flex-grow w-full">
+              {children}
+            </main>
+            <footer className="py-10 text-center text-sm text-neutral-500 mt-auto px-5">
+              <p>Powered by <a href={repoUrl} target="_blank" rel="noopener noreferrer" className="hover:underline">{repoName}</a></p>
+            </footer>
+          </Providers>
         </ThemeProvider>
       </body>
     </html>

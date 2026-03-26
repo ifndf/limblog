@@ -34,45 +34,37 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
     const session = await getSession()
 
     return (
-        <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10">
+        <div className="max-w-3xl mx-auto px-5 space-y-10">
             <section className="space-y-8 mt-4">
                 {session && (
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center justify-end">
+                    <div className="flex flex-col gap-3">
+                        <div className="flex items-start justify-end">
                             <SearchInput defaultValue={query} />
                         </div>
                         {query && (
                             <p className="text-sm text-neutral-500">
-                                搜索 "{query}" , 共找到 {totalPosts} 篇文章
+                                搜索 "{query}" ，共找到 {totalPosts} 篇文章
                             </p>
                         )}
                     </div>
                 )}
 
                 {posts.length === 0 ? (
-                    <p className="text-neutral-500 italic">目前还没有博客。</p>
+                    <p className="text-neutral-500 italic py-8 text-center">目前还没有博客。</p>
                 ) : (
-                    <div className="space-y-4">
-                        {posts.map((post) => {
-                            const d = new Date(post.createdAt)
-                            const day = d.toLocaleDateString('en-GB', { day: '2-digit' })
-                            const month = d.toLocaleDateString('en-GB', { month: 'short' })
-                            const year = d.getFullYear()
-                            const dateStr = `${day} ${month}, ${year}`
-
-                            return (
-                                <article key={post.id} className="group flex flex-row items-baseline gap-4 sm:gap-6">
-                                    <time dateTime={post.createdAt.toISOString()} className="text-neutral-500 w-[105px] sm:w-[124px] shrink-0 font-mono text-sm sm:text-base tabular-nums">
-                                        {dateStr}
-                                    </time>
-                                    <Link href={`/${post.slug}`} className="block flex-1 min-w-0">
-                                        <h3 className="text-base sm:text-lg text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug font-normal truncate sm:whitespace-normal">
-                                            {post.title}
-                                        </h3>
-                                    </Link>
-                                </article>
-                            )
-                        })}
+                    <div className="space-y-3">
+                        {posts.map((post) => (
+                            <article key={post.id} className="flex sm:items-baseline gap-3 sm:gap-6 group py-2 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
+                                <time dateTime={post.createdAt.toISOString()} className="text-neutral-400 dark:text-neutral-500 shrink-0 font-mono text-xs sm:text-sm tabular-nums mt-0.5">
+                                    {new Date(post.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: '2-digit' })}
+                                </time>
+                                <Link href={`/${post.slug}`} className="block flex-1 min-w-0">
+                                    <h3 className="text-base text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug truncate">
+                                        {post.title}
+                                    </h3>
+                                </Link>
+                            </article>
+                        ))}
                     </div>
                 )}
 
