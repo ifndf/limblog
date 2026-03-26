@@ -3,8 +3,9 @@ import prisma from '@/lib/prisma'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import remarkBreaks from 'remark-breaks'
-import { Github, Twitter, Mail } from 'lucide-react'
+import { Github, Twitter, Mail, Pencil } from 'lucide-react'
 import { checkVisibility } from '@/lib/visibility'
+import { getSession } from '@/lib/auth'
 
 export default async function Home() {
   await checkVisibility()
@@ -13,6 +14,8 @@ export default async function Home() {
   for (const c of configs) {
     siteConfig[c.key] = c.value
   }
+
+  const session = await getSession()
 
   const defaultHomeContent = `
 Hello, 这是 LimBlog 主页！
@@ -45,8 +48,19 @@ Start your writing journey now!
   const homeContent = siteConfig.home_content?.trim() || defaultHomeContent
 
   return (
-    <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <section className="mt-4 space-y-6">
+    <div className="max-w-2xl mx-auto px-5 lg:px-0 space-y-10 animate-in fade-in slide-in-from-bottom-2 duration-500 relative">
+      {session && (
+        <div className="flex justify-end mb-4 absolute top-0 right-5 lg:right-0">
+          <Link
+            href="/home/edit"
+            className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100 border border-neutral-300 dark:border-neutral-700 px-3 py-1.5 rounded-md hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+          >
+            <Pencil size={14} />
+            编辑
+          </Link>
+        </div>
+      )}
+      <section className={`mt-4 space-y-6 ${session ? 'mt-12' : ''}`}>
         <div className="prose prose-neutral dark:prose-invert">
           <ReactMarkdown
             remarkPlugins={[remarkGfm, remarkBreaks]}
