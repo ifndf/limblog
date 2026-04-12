@@ -33,6 +33,14 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
 
     const session = await getSession()
 
+    // Group posts by year
+    const grouped = posts.reduce<Record<string, typeof posts>>((acc, post) => {
+        const year = new Date(post.createdAt).getFullYear().toString()
+        if (!acc[year]) acc[year] = []
+        acc[year].push(post)
+        return acc
+    }, {})
+
     return (
         <div className="max-w-3xl mx-auto px-5 space-y-10">
             <section className="space-y-8 mt-4">
@@ -52,18 +60,25 @@ export default async function Blog({ searchParams }: { searchParams: Promise<{ p
                 {posts.length === 0 ? (
                     <p className="text-neutral-500 italic py-8 text-center">目前还没有博客。</p>
                 ) : (
-                    <div className="space-y-3">
-                        {posts.map((post) => (
-                            <article key={post.id} className="flex sm:items-baseline gap-3 sm:gap-6 group py-2 border-b border-neutral-100 dark:border-neutral-800 last:border-0">
-                                <time dateTime={post.createdAt.toISOString()} className="text-neutral-400 dark:text-neutral-500 shrink-0 font-mono text-xs sm:text-sm tabular-nums mt-0.5">
-                                    {new Date(post.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: '2-digit' })}
-                                </time>
-                                <Link href={`/${post.slug}`} className="block flex-1 min-w-0">
-                                    <h3 className="text-base text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug truncate">
-                                        {post.title}
-                                    </h3>
-                                </Link>
-                            </article>
+                    <div className="space-y-8">
+                        {Object.entries(grouped).sort(([a], [b]) => Number(b) - Number(a)).map(([year, yearPosts]) => (
+                            <div key={year} className="space-y-1">
+                                <h2 className="text-3xl font-bold text-stone-300 dark:text-neutral-700 select-none mb-3">{year}</h2>
+                                <div className="space-y-0">
+                                    {yearPosts.map((post) => (
+                                        <article key={post.id} className="flex items-baseline gap-4 group py-2">
+                                            <time dateTime={post.createdAt.toISOString()} className="text-neutral-400 dark:text-neutral-500 shrink-0 font-mono text-sm tabular-nums">
+                                                {new Date(post.createdAt).toLocaleDateString('zh-CN', { month: 'short', day: '2-digit' })}
+                                            </time>
+                                            <Link href={`/${post.slug}`} className="block flex-1 min-w-0">
+                                                <h3 className="text-base text-blue-600 dark:text-blue-400 group-hover:underline underline-offset-4 decoration-blue-400/50 leading-snug truncate">
+                                                    {post.title}
+                                                </h3>
+                                            </Link>
+                                        </article>
+                                    ))}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}

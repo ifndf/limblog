@@ -42,10 +42,10 @@ export default async function RootLayout({
                   {blogName}
                 </Link>
                 <nav className="flex gap-5 items-center">
-                  <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
+                  <Link href="/blog" className="text-blue-600 dark:text-blue-400 hover:underline text-base font-medium">
                     Blog
                   </Link>
-                  <Link href="/links" className="text-blue-600 dark:text-blue-400 hover:underline text-base">
+                  <Link href="/links" className="text-blue-600 dark:text-blue-400 hover:underline text-base font-medium">
                     Links
                   </Link>
                   {session && (
